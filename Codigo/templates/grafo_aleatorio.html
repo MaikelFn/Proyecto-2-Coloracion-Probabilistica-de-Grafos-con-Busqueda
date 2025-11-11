@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Generar grafo automático</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+    <div class="formulario">
+        <h1>Generar Grafo Automático</h1>
+        <form method="POST" action="{{ url_for('generar_grafo_aleatorio') }}">
+            <div class="entrada">
+                <label>Cantidad de nodos:</label>
+                <input type="number" name="nodos" min="5" max="120" value="5" required>
+            </div>
+            <div class="entrada">
+                <button type="submit">Generar Grafo</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

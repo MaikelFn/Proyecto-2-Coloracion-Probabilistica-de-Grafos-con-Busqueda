@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="menu-container">
+        <h1>Menu Principal</h1>
+        <ul class="menu-list">
+            <button class="menu-button" onclick="location.href='{{ url_for('crear_grafo_manual') }}'">Crear Grafo Manual</button>
+            <button class="menu-button" onclick="location.href='{{ url_for('crear_grafo_aleatorio') }}'">Crear Grafo Aleatorio</button>
+        </ul>
+    </div>
+</body>
+</html>
