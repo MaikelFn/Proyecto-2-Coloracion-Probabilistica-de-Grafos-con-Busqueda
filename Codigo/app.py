@@ -24,8 +24,7 @@ def crear_app():
         nodos = int(request.form.get('nodos'))
         print(nodos)
         grafo=logica.generar_grafo_aleatorio(nodos)
-        return render_template('menu.html')
-    
+        return render_template('mostrar_grafo.html', nodos=grafo.obtener_nodos(), aristas=grafo.obtener_conexiones())
     return app
 if __name__ == '__main__':
     app = crear_app()
