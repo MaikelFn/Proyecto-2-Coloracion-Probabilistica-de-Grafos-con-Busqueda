@@ -26,6 +26,19 @@ body {
 	text-align: center;
 }
 
+.nodo-sin-color {
+	background: #000000;
+	color: #ffffff;
+	width: 3.3rem;
+	height: 3.3rem;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+	margin: 0.25rem;
+}
+
 .nodo-amarillo {
 	background: #FFD700;
 	color: #222;
