@@ -11,8 +11,10 @@
         <h1>Visualizar Grafo</h1>
     <div class="grafo-details">
         {% for nodo in nodos %}
+            {% if nodo[1] == None %}
+            <div class="nodo nodo-sin-color" title="{{ nodo[0] }}" data-node-id="{{ nodo[0] }}">{{ nodo[0] }}</div>
+            {% endif %}
             {% if nodo[1] == "Amarillo" %}
-            <!-- Muy simple: clase 'nodo-amarillo' repetitiva y separada -->
             <div class="nodo nodo-amarillo" title="{{ nodo[0] }}" data-node-id="{{ nodo[0] }}">{{ nodo[0] }}</div>
             {% endif %}
             {% if nodo[1] == "Azul" %}

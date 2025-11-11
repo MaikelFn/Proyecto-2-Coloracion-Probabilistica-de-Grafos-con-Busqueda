@@ -40,9 +40,3 @@ def crear_grafo_manual():
     grafo = Grafo()
     return grafo
 
-Grafo=generar_grafo_aleatorio(40)
-print(f"grafo original")
-Grafo.mostrar_grafo()
-Historial, intentos = Montecarlo(Grafo, 100)
-print(Historial[-1])
-Grafo.mostrar_grafo()
