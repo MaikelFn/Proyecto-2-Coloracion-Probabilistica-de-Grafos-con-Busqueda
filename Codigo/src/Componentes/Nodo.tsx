@@ -7,7 +7,7 @@ type NodoProps = {
   color: Color;
 };
 
-function Nodo({ id, color, x, y }: NodoProps) {
+function Nodo(props: NodoProps) {
   const colores = {
     Azul: "#3b82f6",
     Amarillo: "#fbbf24",
@@ -19,12 +19,12 @@ function Nodo({ id, color, x, y }: NodoProps) {
       style={{
         // Estilo del nodo
         position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
+        left: `${props.x}px`,
+        top: `${props.y}px`,
         width: "50px",
         height: "50px",
         borderRadius: "50%",
-        backgroundColor: colores[color],
+        backgroundColor: colores[props.color],
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -33,7 +33,7 @@ function Nodo({ id, color, x, y }: NodoProps) {
         margin: "10px",
       }}
     >
-      {id}
+      {props.id}
     </div>
   );
 }

@@ -1,7 +1,11 @@
 import Boton from "../Componentes/Boton";
 import EntradaNumerica from "../Componentes/EntradaNumerica";
 
-function GenerarGrafoAleatorio() {
+type GenerarGrafoAleatorioProps = {
+  cambiarPagina: (pagina: "menu" | "previsualizar") => void;
+};
+
+function GenerarGrafoAleatorio({ cambiarPagina }: GenerarGrafoAleatorioProps) {
   return (
     <div>
       <h1>Generar Grafo Aleatorio</h1>
@@ -21,8 +25,9 @@ function GenerarGrafoAleatorio() {
       />
       <Boton
         texto="Generar Grafo"
-        onClick={() => alert("sigo sin saber cambiar paginas xd")}
+        onClick={() => cambiarPagina("previsualizar")}
       />
+      <Boton texto="Volver" onClick={() => cambiarPagina("menu")} />
     </div>
   );
 }

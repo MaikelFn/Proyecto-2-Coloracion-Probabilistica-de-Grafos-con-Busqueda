@@ -1,4 +1,3 @@
-import React from "react";
 import Nodo from "../Componentes/Nodo";
 import Arista from "../Componentes/Arista";
 type Color = "Azul" | "Amarillo" | "Morado";
@@ -9,7 +8,6 @@ type PrevisualizarProps = {
 };
 
 function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
-  // Paso 1: Renderizar nodos y guardar posiciones con su ID
   const posiciones: { [key: number]: { x: number; y: number } } = {};
   const nodosRenderizados = [];
 
@@ -22,7 +20,6 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
     nodosRenderizados.push(<Nodo key={id} id={id} color={color} x={x} y={y} />);
   }
 
-  // Paso 2: Buscar las posiciones de los IDs en las aristas y delegar renderizado
   const aristasRenderizadas = [];
   for (let i = 0; i < aristas.length; i++) {
     const [id1, id2, conflicto] = aristas[i];
