@@ -9,6 +9,9 @@ function App() {
         [1, "Morado"],
         [2, "Azul"],
         [3, "Azul"],
+        [4, "Morado"],
+        [5, "Azul"],
+        [6, "Amarillo"],
       ]}
     />
   );
