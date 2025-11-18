@@ -10,8 +10,12 @@ function App() {
         [2, "Azul"],
         [3, "Azul"],
         [4, "Morado"],
-        [5, "Azul"],
-        [6, "Amarillo"],
+        [5, "Morado"],
+      ]}
+      aristas={[
+        [1, 2, false],
+        [4, 3, false],
+        [4, 5, true],
       ]}
     />
   );
