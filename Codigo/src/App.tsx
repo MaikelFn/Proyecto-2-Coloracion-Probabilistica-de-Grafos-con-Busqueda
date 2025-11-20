@@ -2,36 +2,50 @@ import { useState } from "react";
 import Menu from "./Paginas/Menu";
 import GenerarGrafoAleatorio from "./Paginas/Generargrafoa";
 import Previsualizar from "./Paginas/Previsualizar";
+import { GrafoAleatorio, MonteCarloColoracion } from "./logica";
+import { Grafo } from "./Clases";
 
 type Pagina = "menu" | "generarAleatorio" | "previsualizar";
 
 function App() {
   const [paginaActual, setPaginaActual] = useState<Pagina>("menu");
+  const [grafoActual, setGrafoActual] = useState<Grafo | null>(null);
+  const [historialColoracion, setHistorialColoracion] = useState<any[]>([]);
 
   const cambiarPagina = (pagina: Pagina) => {
     setPaginaActual(pagina);
   };
+
+  const GenerarGrafoA = (numNodos: number, probabilidadArista: number) => {
+    const grafo = GrafoAleatorio(numNodos, probabilidadArista);
+    setGrafoActual(grafo);
+    const historial = MonteCarloColoracion(grafo, 1000);
+    setHistorialColoracion(historial);
+    cambiarPagina("previsualizar");
+  };
+
+  if (paginaActual === "previsualizar" && grafoActual) {
+    return (
+      <Previsualizar
+        nodos={grafoActual.obtener_nodos() as Array<[number, string | null]>}
+        aristas={grafoActual.aristas.map((a) => [
+          a.nodo1.id,
+          a.nodo2.id,
+          a.conflicto,
+        ])}
+      />
+    );
+  }
 
   if (paginaActual === "menu") {
     return <Menu cambiarPagina={cambiarPagina} />;
   }
 
   if (paginaActual === "generarAleatorio") {
-    return <GenerarGrafoAleatorio cambiarPagina={cambiarPagina} />;
-  }
-
-  if (paginaActual === "previsualizar") {
     return (
-      <Previsualizar
-        nodos={[
-          [0, "Azul"],
-          [1, "Amarillo"],
-          [2, "Amarillo"],
-        ]}
-        aristas={[
-          [0, 1, false],
-          [1, 2, true],
-        ]}
+      <GenerarGrafoAleatorio
+        GenerarGrafoA={GenerarGrafoA}
+        cambiarPagina={cambiarPagina}
       />
     );
   }
