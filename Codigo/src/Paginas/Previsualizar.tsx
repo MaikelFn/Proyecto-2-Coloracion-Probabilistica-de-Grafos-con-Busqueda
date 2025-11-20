@@ -1,9 +1,8 @@
 import Nodo from "../Componentes/Nodo";
 import Arista from "../Componentes/Arista";
-type Color = "Azul" | "Amarillo" | "Morado";
 
 type PrevisualizarProps = {
-  nodos: Array<[number, Color]>;
+  nodos: Array<[number, string | null]>;
   aristas: Array<[number, number, boolean]>;
 };
 
@@ -11,14 +10,46 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
   const posiciones: { [key: number]: { x: number; y: number } } = {};
   const nodosRenderizados = [];
 
+  let minX = Infinity,
+    maxX = -Infinity;
+  let minY = Infinity,
+    maxY = -Infinity;
+
   for (let i = 0; i < nodos.length; i++) {
     const [id, color] = nodos[i];
-    const x = 100 + i * 200;
-    const y = 100;
+    if (!color) continue;
+
+    const nodosPorFila = Math.ceil(Math.sqrt(nodos.length));
+    const fila = Math.floor(i / nodosPorFila);
+    const columna = i % nodosPorFila;
+
+    const espacioX = 80;
+    const espacioY = 80;
+    const offsetX = (fila % 2) * (espacioX / 2);
+
+    const x = 100 + columna * espacioX + offsetX;
+    const y = 100 + fila * espacioY;
+
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
 
     posiciones[id] = { x, y };
-    nodosRenderizados.push(<Nodo key={id} id={id} color={color} x={x} y={y} />);
+    nodosRenderizados.push(
+      <Nodo
+        key={id}
+        id={id}
+        color={color as "Azul" | "Amarillo" | "Morado"}
+        x={x}
+        y={y}
+      />
+    );
   }
+
+  const padding = 100;
+  const width = Math.max(900, maxX - minX + padding * 2);
+  const height = Math.max(900, maxY - minY + padding * 2);
 
   const aristasRenderizadas = [];
   for (let i = 0; i < aristas.length; i++) {
@@ -42,14 +73,22 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "100px",
+      }}
+    >
       <h1>Grafo</h1>
       <div
         style={{
           position: "relative",
-          width: "1800px",
-          height: "600px",
+          width: `${width}px`,
+          height: `${height}px`,
           border: "1px solid black",
+          backgroundColor: "#3b3b3bff",
         }}
       >
         <svg

@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 
 type EntradaNumericaProps = {
   minimo?: number;
@@ -6,12 +6,16 @@ type EntradaNumericaProps = {
   defaultValor?: number;
   etiqueta?: string;
   name?: string;
+  onChange?: (valor: number) => void;
 };
+
 function EntradaNumerica(props: EntradaNumericaProps) {
-  const [value, setValue] = React.useState(props.defaultValor);
+  const [value, setValue] = useState(props.defaultValor);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setValue(Number(event.target.value));
+    const nuevoValor = Number(event.target.value);
+    setValue(nuevoValor);
+    props.onChange?.(nuevoValor);
   };
 
   return (
