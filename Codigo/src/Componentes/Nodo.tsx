@@ -1,4 +1,4 @@
-type Color = "Azul" | "Amarillo" | "Morado";
+type Color = "Azul" | "Amarillo" | "Morado" | null;
 
 type NodoProps = {
   x: number;
@@ -14,6 +14,11 @@ function Nodo(props: NodoProps) {
     Morado: "#a855f7",
   };
 
+  // Detectar si no tiene color
+  const tieneColor = props.color !== null;
+  const colorFondo =
+    tieneColor && props.color ? colores[props.color] : "#000000ff";
+
   return (
     <div
       style={{
@@ -24,7 +29,7 @@ function Nodo(props: NodoProps) {
         width: "50px",
         height: "50px",
         borderRadius: "50%",
-        backgroundColor: colores[props.color],
+        backgroundColor: colorFondo,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

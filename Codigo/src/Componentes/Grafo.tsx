@@ -1,12 +1,12 @@
-import Nodo from "../Componentes/Nodo";
-import Arista from "../Componentes/Arista";
+import Nodo from "./Nodo";
+import Arista from "./Arista";
 
-type PrevisualizarProps = {
+type GrafoProps = {
   nodos: Array<[number, string | null]>;
   aristas: Array<[number, number, boolean]>;
 };
 
-function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
+function Grafo({ nodos, aristas }: GrafoProps) {
   const posiciones: { [key: number]: { x: number; y: number } } = {};
   const nodosRenderizados = [];
 
@@ -17,7 +17,6 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
 
   for (let i = 0; i < nodos.length; i++) {
     const [id, color] = nodos[i];
-    if (!color) continue;
 
     const nodosPorFila = Math.ceil(Math.sqrt(nodos.length));
     const fila = Math.floor(i / nodosPorFila);
@@ -40,7 +39,7 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
       <Nodo
         key={id}
         id={id}
-        color={color as "Azul" | "Amarillo" | "Morado"}
+        color={color as "Azul" | "Amarillo" | "Morado" | null}
         x={x}
         y={y}
       />
@@ -75,35 +74,25 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "100px",
+        position: "relative",
+        width: `${width}px`,
+        height: `${height}px`,
+        border: "1px solid black",
+        backgroundColor: "#3b3b3bff",
       }}
     >
-      <h1>Grafo</h1>
-      <div
+      <svg
         style={{
-          position: "relative",
-          width: `${width}px`,
-          height: `${height}px`,
-          border: "1px solid black",
-          backgroundColor: "#3b3b3bff",
+          position: "absolute",
+          width: "100%",
+          height: "100%",
         }}
       >
-        <svg
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {aristasRenderizadas}
-        </svg>
-        {nodosRenderizados}
-      </div>
+        {aristasRenderizadas}
+      </svg>
+      {nodosRenderizados}
     </div>
   );
 }
 
-export default Previsualizar;
+export default Grafo;
