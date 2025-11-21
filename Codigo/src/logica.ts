@@ -1,4 +1,4 @@
-import { Nodo, Grafo } from "./Clases.ts";
+import { Nodo, Grafo } from "./Clases";
 
 export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   const grafo = new Grafo();

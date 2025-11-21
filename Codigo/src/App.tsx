@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Menu from "./Paginas/Menu";
 import GenerarGrafoAleatorio from "./Paginas/Generargrafoa";
-import Previsualizar from "./Paginas/Previsualizar";
+import Previsualizar from "./Paginas/Prev";
 import { GrafoAleatorio, MonteCarloColoracion } from "./logica";
 import { Grafo } from "./Clases";
 

@@ -1,12 +1,12 @@
-import Nodo from "../Componentes/Nodo";
-import Arista from "../Componentes/Arista";
+import Nodo from "./Nodo";
+import Arista from "./Arista";
 
-type PrevisualizarProps = {
+type GrafoProps = {
   nodos: Array<[number, string | null]>;
   aristas: Array<[number, number, boolean]>;
 };
 
-function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
+function Grafo({ nodos, aristas }: GrafoProps) {
   const posiciones: { [key: number]: { x: number; y: number } } = {};
   const nodosRenderizados = [];
 
@@ -75,38 +75,25 @@ function Previsualizar({ nodos, aristas }: PrevisualizarProps) {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        width: "100%",
-        minHeight: "100vh",
+        position: "relative",
+        width: `${width}px`,
+        height: `${height}px`,
+        border: "1px solid black",
+        backgroundColor: "#3b3b3bff",
       }}
     >
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Grafo</h1>
-      <div
+      <svg
         style={{
-          position: "relative",
-          width: `${width}px`,
-          height: `${height}px`,
-          border: "1px solid black",
-          backgroundColor: "#3b3b3bff",
+          position: "absolute",
+          width: "100%",
+          height: "100%",
         }}
       >
-        <svg
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {aristasRenderizadas}
-        </svg>
-        {nodosRenderizados}
-      </div>
+        {aristasRenderizadas}
+      </svg>
+      {nodosRenderizados}
     </div>
   );
 }
 
-export default Previsualizar;
+export default Grafo;
