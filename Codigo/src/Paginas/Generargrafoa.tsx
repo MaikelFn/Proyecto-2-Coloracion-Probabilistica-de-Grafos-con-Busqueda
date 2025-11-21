@@ -13,7 +13,7 @@ function GenerarGrafoAleatorio({
   GenerarGrafoA,
   cambiarPagina,
 }: GenerarGrafoAleatorioProps) {
-  const [CantNodos, setCantNodos] = useState<number>(5);
+  const [CantNodos, setCantNodos] = useState<number>(60);
   const [ProbConex, setProbConex] = useState<number>(0.02);
 
   return (
@@ -49,7 +49,7 @@ function GenerarGrafoAleatorio({
             textAlign: "center",
           }}
         >
-          ⚙️ Configuración
+          Configuración
         </h1>
         <p
           style={{
@@ -72,9 +72,9 @@ function GenerarGrafoAleatorio({
             etiqueta="Número de nodos"
             onChange={(value) => setCantNodos(value)}
             name="numNodos"
-            minimo={5}
+            minimo={60}
             maximo={120}
-            defaultValor={5}
+            defaultValor={60}
           />
           <EntradaNumerica
             etiqueta="Probabilidad de conexión:"
@@ -92,10 +92,10 @@ function GenerarGrafoAleatorio({
             }}
           >
             <Boton
-              texto="✨ Generar Grafo"
+              texto="Generar Grafo"
               onClick={() => GenerarGrafoA(CantNodos, ProbConex)}
             />
-            <Boton texto="← Volver" onClick={() => cambiarPagina("menu")} />
+            <Boton texto="Volver" onClick={() => cambiarPagina("menu")} />
           </div>
         </div>
       </div>
