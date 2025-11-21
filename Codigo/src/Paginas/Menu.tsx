@@ -1,7 +1,7 @@
 import Boton from "../Componentes/Boton";
 
 type MenuProps = {
-  cambiarPagina: (pagina: "menu" | "generarAleatorio") => void;
+  cambiarPagina: (pagina: "menu" | "generarAleatorio" | "grafoManual") => void;
 };
 
 function Menu({ cambiarPagina }: MenuProps) {
@@ -62,7 +62,7 @@ function Menu({ cambiarPagina }: MenuProps) {
           />
           <Boton
             texto="Generar Grafo Manual"
-            onClick={() => alert("Próximamente...")}
+            onClick={() => cambiarPagina("grafoManual")}
           />
         </div>
       </div>

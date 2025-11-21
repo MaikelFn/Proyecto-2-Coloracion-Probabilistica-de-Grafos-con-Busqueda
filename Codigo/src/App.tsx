@@ -1,12 +1,18 @@
 import { useState } from "react";
 import Menu from "./Paginas/Menu";
 import GenerarGrafoAleatorio from "./Paginas/Generargrafoa";
+import GrafoManual from "./Paginas/GrafoManual";
 import Previsualizar from "./Paginas/Prev";
 import MonteCarlo from "./Paginas/MonteCarlo";
-import { GrafoAleatorio, MonteCarloColoracion } from "./logica";
+import { GrafoAleatorio, GrafoManual as crearGrafoManual } from "./logica";
 import { Grafo } from "./Clases";
 
-type Pagina = "menu" | "generarAleatorio" | "previsualizar" | "monteCarlo";
+type Pagina =
+  | "menu"
+  | "generarAleatorio"
+  | "grafoManual"
+  | "previsualizar"
+  | "monteCarlo";
 
 function App() {
   const [paginaActual, setPaginaActual] = useState<Pagina>("menu");
@@ -18,6 +24,12 @@ function App() {
 
   const GenerarGrafoA = (numNodos: number, probabilidadArista: number) => {
     const grafo = GrafoAleatorio(numNodos, probabilidadArista);
+    setGrafoActual(grafo);
+    cambiarPagina("previsualizar");
+  };
+
+  const GenerarGrafoM = (nodos: number[], aristas: [number, number][]) => {
+    const grafo = crearGrafoManual(nodos, aristas);
     setGrafoActual(grafo);
     cambiarPagina("previsualizar");
   };
@@ -44,6 +56,15 @@ function App() {
     return (
       <GenerarGrafoAleatorio
         GenerarGrafoA={GenerarGrafoA}
+        cambiarPagina={cambiarPagina}
+      />
+    );
+  }
+
+  if (paginaActual === "grafoManual") {
+    return (
+      <GrafoManual
+        GenerarGrafoM={GenerarGrafoM}
         cambiarPagina={cambiarPagina}
       />
     );
