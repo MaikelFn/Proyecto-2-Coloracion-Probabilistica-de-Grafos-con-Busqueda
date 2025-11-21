@@ -26,9 +26,20 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   return grafo;
 }
 
-export function MonteCarloColoracion(grafo: Grafo, iteraciones: number) {
+export function MonteCarloColoracion(
+  grafo: Grafo,
+  iteraciones: number
+): [
+  Array<{
+    intento: number;
+    conflictos: number;
+    mapa_colores: { [key: number]: string | null };
+  }>,
+  number
+] {
   let exitos = 0;
   let Historial = [];
+  const TiempoInicio = performance.now();
   for (let i = 0; i < iteraciones; i++) {
     grafo.colorear_grafo();
     const mapa_colores = grafo.obtener_colores();
@@ -42,5 +53,8 @@ export function MonteCarloColoracion(grafo: Grafo, iteraciones: number) {
     }
     Historial.push(intento_info);
   }
-  return Historial;
+  const TiempoFin = performance.now();
+  const TiempoTotal = TiempoFin - TiempoInicio;
+
+  return [Historial, TiempoTotal, exitos];
 }

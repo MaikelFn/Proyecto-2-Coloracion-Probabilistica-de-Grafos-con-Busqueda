@@ -19,8 +19,10 @@ function App() {
   const GenerarGrafoA = (numNodos: number, probabilidadArista: number) => {
     const grafo = GrafoAleatorio(numNodos, probabilidadArista);
     setGrafoActual(grafo);
-    const historial = MonteCarloColoracion(grafo, 1000);
+    const [historial, tiempo, exitos] = MonteCarloColoracion(grafo, 1000);
     setHistorialColoracion(historial);
+    console.log(`Tiempo de ejecución: ${tiempo.toFixed(2)} ms`);
+    console.log(`Número de éxitos: ${exitos}`);
     cambiarPagina("previsualizar");
   };
 

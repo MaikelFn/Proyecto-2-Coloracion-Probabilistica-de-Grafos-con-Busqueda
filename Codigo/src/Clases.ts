@@ -136,4 +136,67 @@ export class Grafo {
     }
     return diccionario_colores;
   }
+
+  obtener_estadisticas() {
+    const total_nodos = this.nodos.length;
+    const total_aristas = this.aristas.length;
+    const total_conflictos = this.total_conflictos();
+    const es_valido = this.validar_coloracion();
+    const porcentaje_conflictos =
+      total_aristas > 0
+        ? ((total_conflictos / total_aristas) * 100).toFixed(2)
+        : "0.00";
+
+    // Contar nodos por color
+    const nodos_por_color: { [color: string]: number } = {};
+    for (const nodo of this.nodos) {
+      if (nodo.color) {
+        nodos_por_color[nodo.color] = (nodos_por_color[nodo.color] || 0) + 1;
+      }
+    }
+
+    // Contar nodos con conflictos
+    let nodos_con_conflictos = 0;
+    for (const nodo of this.nodos) {
+      if (nodo.contar_conflictos() > 0) {
+        nodos_con_conflictos++;
+      }
+    }
+
+    // Densidad del grafo
+    const max_aristas = (total_nodos * (total_nodos - 1)) / 2;
+    const densidad =
+      max_aristas > 0
+        ? ((total_aristas / max_aristas) * 100).toFixed(2)
+        : "0.00";
+
+    return {
+      total_nodos,
+      total_aristas,
+      total_conflictos,
+      es_valido,
+      porcentaje_conflictos: parseFloat(porcentaje_conflictos),
+      k_colores: this.colores.length,
+      colores_disponibles: this.colores,
+      nodos_por_color,
+      nodos_con_conflictos,
+      densidad_grafo: parseFloat(densidad),
+      aristas_validas: total_aristas - total_conflictos,
+    };
+  }
+
+  obtener_nodos_conflictivos() {
+    const nodos_conflictivos = [];
+    for (const nodo of this.nodos) {
+      const num_conflictos = nodo.contar_conflictos();
+      if (num_conflictos > 0) {
+        nodos_conflictivos.push({
+          id: nodo.id,
+          color: nodo.color,
+          conflictos: num_conflictos,
+        });
+      }
+    }
+    return nodos_conflictivos;
+  }
 }
