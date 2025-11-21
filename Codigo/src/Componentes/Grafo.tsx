@@ -17,7 +17,6 @@ function Grafo({ nodos, aristas }: GrafoProps) {
 
   for (let i = 0; i < nodos.length; i++) {
     const [id, color] = nodos[i];
-    if (!color) continue;
 
     const nodosPorFila = Math.ceil(Math.sqrt(nodos.length));
     const fila = Math.floor(i / nodosPorFila);
@@ -40,7 +39,7 @@ function Grafo({ nodos, aristas }: GrafoProps) {
       <Nodo
         key={id}
         id={id}
-        color={color as "Azul" | "Amarillo" | "Morado"}
+        color={color as "Azul" | "Amarillo" | "Morado" | null}
         x={x}
         y={y}
       />

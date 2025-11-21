@@ -22,7 +22,6 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
       }
     }
   }
-  grafo.colorear_grafo();
   return grafo;
 }
 
@@ -35,6 +34,7 @@ export function MonteCarloColoracion(
     conflictos: number;
     mapa_colores: { [key: number]: string | null };
   }>,
+  number,
   number
 ] {
   let exitos = 0;
