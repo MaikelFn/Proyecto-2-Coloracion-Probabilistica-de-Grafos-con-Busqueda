@@ -39,6 +39,31 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   return grafo;
 }
 
+export function GrafoManual(
+  idsNodos: number[],
+  aristas: [number, number][]
+): Grafo {
+  const grafo = new Grafo();
+
+  for (const id of idsNodos) {
+    const nodo = new Nodo(id);
+    grafo.añadir_nodo(nodo);
+  }
+
+  for (const [id1, id2] of aristas) {
+    const nodo1 = grafo.nodos.find((n) => n.id === id1);
+    const nodo2 = grafo.nodos.find((n) => n.id === id2);
+
+    if (nodo1 && nodo2 && nodo1 !== nodo2) {
+      if (!nodo1.vecinos.includes(nodo2)) {
+        grafo.añadir_arista(nodo1, nodo2);
+      }
+    }
+  }
+
+  return grafo;
+}
+
 export function MonteCarloColoracion(
   grafo: Grafo,
   iteraciones: number
