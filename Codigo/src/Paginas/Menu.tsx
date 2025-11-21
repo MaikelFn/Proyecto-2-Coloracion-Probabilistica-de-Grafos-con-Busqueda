@@ -22,6 +22,7 @@ function Menu({ cambiarPagina }: MenuProps) {
           background: "rgba(255, 255, 255, 0.95)",
           borderRadius: "20px",
           padding: "3rem",
+          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
           maxWidth: "500px",
           width: "100%",
           textAlign: "center",
