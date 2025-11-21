@@ -8,8 +8,8 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   }
   for (let i = 0; i < numNodos; i++) {
     let CantidadVecinos = Math.floor(probabilidadArista * numNodos);
-    if (CantidadVecinos < 1) {
-      CantidadVecinos = 1;
+    if (CantidadVecinos < 3) {
+      CantidadVecinos = 3;
     }
     for (let k = 0; k < CantidadVecinos; k++) {
       const nodo1 = grafo.nodos[i];
@@ -22,6 +22,45 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
       }
     }
   }
+
+  // Validar que no haya nodos desconectados
+  for (let i = 0; i < numNodos; i++) {
+    const nodo = grafo.nodos[i];
+    if (nodo.vecinos.length === 0) {
+      // Conectar nodo desconectado con un nodo aleatorio
+      let indiceAleatorio = Math.floor(Math.random() * numNodos);
+      while (indiceAleatorio === i) {
+        indiceAleatorio = Math.floor(Math.random() * numNodos);
+      }
+      grafo.añadir_arista(nodo, grafo.nodos[indiceAleatorio]);
+    }
+  }
+
+  return grafo;
+}
+
+export function GrafoManual(
+  idsNodos: number[],
+  aristas: [number, number][]
+): Grafo {
+  const grafo = new Grafo();
+
+  for (const id of idsNodos) {
+    const nodo = new Nodo(id);
+    grafo.añadir_nodo(nodo);
+  }
+
+  for (const [id1, id2] of aristas) {
+    const nodo1 = grafo.nodos.find((n) => n.id === id1);
+    const nodo2 = grafo.nodos.find((n) => n.id === id2);
+
+    if (nodo1 && nodo2 && nodo1 !== nodo2) {
+      if (!nodo1.vecinos.includes(nodo2)) {
+        grafo.añadir_arista(nodo1, nodo2);
+      }
+    }
+  }
+
   return grafo;
 }
 

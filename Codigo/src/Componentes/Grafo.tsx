@@ -47,8 +47,8 @@ function Grafo({ nodos, aristas }: GrafoProps) {
   }
 
   const padding = 100;
-  const width = Math.max(900, maxX - minX + padding * 2);
-  const height = Math.max(900, maxY - minY + padding * 2);
+  const width = Math.max(60, maxX - minX + padding * 2);
+  const height = Math.max(60, maxY - minY + padding * 2);
 
   const aristasRenderizadas = [];
   for (let i = 0; i < aristas.length; i++) {
@@ -77,8 +77,9 @@ function Grafo({ nodos, aristas }: GrafoProps) {
         position: "relative",
         width: `${width}px`,
         height: `${height}px`,
-        border: "1px solid black",
-        backgroundColor: "#3b3b3bff",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        borderRadius: "20px",
+        boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
       }}
     >
       <svg
