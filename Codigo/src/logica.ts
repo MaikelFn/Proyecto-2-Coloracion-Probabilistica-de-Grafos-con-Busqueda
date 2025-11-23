@@ -97,3 +97,39 @@ export function MonteCarloColoracion(
 
   return [Historial, TiempoTotal, exitos];
 }
+
+export function LasVegasColoracion(grafo: Grafo): [
+  Array<{
+    intento: number;
+    conflictos: number;
+    mapa_colores: { [key: number]: string | null };
+  }>,
+  number,
+  number
+] {
+  let intentos = 0;
+  const historial: Array<{
+    intento: number;
+    conflictos: number;
+    mapa_colores: { [key: number]: string | null };
+  }> = [];
+  const TiempoInicio = performance.now();
+
+  while (true) {
+    intentos += 1;
+    grafo.colorear_grafo();
+    const conflictos = grafo.total_conflictos();
+    const mapa_colores = grafo.obtener_colores();
+
+    historial.push({ intento: intentos, conflictos, mapa_colores });
+
+    if (conflictos === 0) {
+      break;
+    }
+  }
+
+  const TiempoFin = performance.now();
+  const TiempoTotal = TiempoFin - TiempoInicio;
+
+  return [historial, TiempoTotal, intentos];
+}
