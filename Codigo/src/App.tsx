@@ -38,11 +38,9 @@ function App() {
     return (
       <Previsualizar
         nodos={grafoActual.obtener_nodos() as Array<[number, string | null]>}
-        aristas={grafoActual.aristas.map((a) => [
-          a.nodo1.id,
-          a.nodo2.id,
-          a.conflicto,
-        ])}
+        aristas={
+          grafoActual.obtener_conexiones() as Array<[number, number, boolean]>
+        }
         cambiarPagina={cambiarPagina}
       />
     );

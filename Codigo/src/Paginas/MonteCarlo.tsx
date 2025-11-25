@@ -25,6 +25,8 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
   const [tiempoTotal, setTiempoTotal] = useState<number>(0);
   const [exitos, setExitos] = useState<number>(0);
   const [intentoActual, setIntentoActual] = useState<number>(0);
+  const [idNodo, setIdNodo] = useState<number>(0);
+  const [colorSeleccionado, setColorSeleccionado] = useState<string>("Azul");
 
   const ejecutarMonteCarlo = () => {
     const [historial, tiempo, exitosTotal] = MonteCarloColoracion(
@@ -42,6 +44,30 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
     const nuevoIntento = valor - 1;
     if (nuevoIntento >= 0 && nuevoIntento < resultados.length) {
       setIntentoActual(nuevoIntento);
+    }
+  };
+
+  const pintarNodoManual = () => {
+    let nodo = null;
+    for (let i = 0; i < grafo.nodos.length; i++) {
+      if (grafo.nodos[i].id === idNodo) {
+        nodo = grafo.nodos[i];
+        break;
+      }
+    }
+
+    if (nodo) {
+      nodo.colorear(colorSeleccionado);
+      grafo.validar_aristas();
+
+      const nuevoMapaColores = grafo.obtener_colores();
+      const nuevosResultados = [...resultados];
+      nuevosResultados[intentoActual] = {
+        ...nuevosResultados[intentoActual],
+        mapa_colores: nuevoMapaColores,
+        conflictos: grafo.total_conflictos(),
+      };
+      setResultados(nuevosResultados);
     }
   };
 
@@ -121,24 +147,13 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
 
   const resultadoActual = resultados[intentoActual];
   grafo.recolorear_nodos(resultadoActual.mapa_colores);
-  console.log("Mapa de colores del intento actual:", grafo.obtener_colores());
 
   const estadisticas = grafo.obtener_estadisticas();
 
-  const nodos: Array<[number, string | null]> = grafo
-    .obtener_nodos()
-    .map(([id, color]) => [id as number, color as string | null]);
-  const conexiones = grafo.obtener_conexiones();
-  const aristas: Array<[number, number, boolean]> = conexiones.map(
-    ([id1, id2]) => {
-      const arista = grafo.aristas.find(
-        (a) =>
-          (a.nodo1.id === id1 && a.nodo2.id === id2) ||
-          (a.nodo1.id === id2 && a.nodo2.id === id1)
-      );
-      return [id1 as number, id2 as number, arista?.conflicto || false];
-    }
-  );
+  const nodos = grafo.obtener_nodos() as Array<[number, string | null]>;
+  const aristas = grafo.obtener_conexiones() as Array<
+    [number, number, boolean]
+  >;
 
   return (
     <div
@@ -163,52 +178,54 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
         <Grafo nodos={nodos} aristas={aristas} />
       </div>
 
-      {/* Panel Derecho - Estadísticas y Controles */}
+      {/* Panel Derecho Estadísticas y Controles */}
       <div
         style={{
-          width: "400px",
-          display: "flex",
-          flexDirection: "column",
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gridTemplateRows: "auto auto",
           gap: "1rem",
+          alignContent: "start",
         }}
       >
         {/* Estadísticas del Intento Actual */}
         <div
           style={{
             background: "rgba(255, 255, 255, 0.95)",
-            borderRadius: "20px",
-            padding: "1.5rem",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+            borderRadius: "15px",
+            padding: "1rem",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
           }}
         >
           <h2
             style={{
-              fontSize: "1.5rem",
+              fontSize: "1.1rem",
               fontWeight: "700",
               color: "#333",
-              marginBottom: "1rem",
+              marginBottom: "0.8rem",
             }}
           >
             Estadísticas del Intento
           </h2>
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+            style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
           >
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Intento:</strong> {resultadoActual.intento} / {intentos}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Conflictos:</strong> {estadisticas.total_conflictos}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Aristas Válidas:</strong> {estadisticas.aristas_validas} /{" "}
               {estadisticas.total_aristas}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Nodos con Conflictos:</strong>{" "}
               {estadisticas.nodos_con_conflictos}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Estado:</strong>{" "}
               {estadisticas.es_valido ? (
                 <span style={{ color: "#22c55e", fontWeight: "600" }}>
@@ -227,84 +244,145 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
         <div
           style={{
             background: "rgba(255, 255, 255, 0.95)",
-            borderRadius: "20px",
-            padding: "1.5rem",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+            borderRadius: "15px",
+            padding: "1rem",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
           }}
         >
           <h2
             style={{
-              fontSize: "1.5rem",
+              fontSize: "1.1rem",
               fontWeight: "700",
               color: "#333",
-              marginBottom: "1rem",
+              marginBottom: "0.8rem",
             }}
           >
             Estadísticas Generales
           </h2>
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+            style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
           >
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Total de Intentos:</strong> {intentos}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Intentos Exitosos:</strong> {exitos}
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Tasa de Éxito:</strong>{" "}
               {((exitos / intentos) * 100).toFixed(2)}%
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Tiempo Total:</strong> {tiempoTotal.toFixed(2)} ms
             </p>
-            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Tiempo Promedio:</strong>{" "}
               {(tiempoTotal / intentos).toFixed(2)} ms/intento
             </p>
           </div>
         </div>
 
-        {/* Seleccionar Intento */}
+        {/* Controles - Ver Intento y Colorear */}
         <div
           style={{
+            gridColumn: "1 / 3",
             background: "rgba(255, 255, 255, 0.95)",
-            borderRadius: "20px",
-            padding: "1.5rem",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+            borderRadius: "15px",
+            padding: "1rem",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+            maxWidth: "600px",
+            margin: "0 auto",
+            width: "100%",
           }}
         >
           <h2
             style={{
-              fontSize: "1.2rem",
+              fontSize: "1.1rem",
               fontWeight: "700",
               color: "#333",
-              marginBottom: "1rem",
+              marginBottom: "0.8rem",
             }}
           >
-            Ver Otro Intento
+            Controles
           </h2>
-          <EntradaNumerica
-            defaultValor={intentoActual + 1}
-            onChange={cambiarIntento}
-            minimo={1}
-            maximo={resultados.length}
-            etiqueta="Número de Intento"
-          />
-        </div>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
+            {/* Ver Otro Intento */}
+            <div>
+              <EntradaNumerica
+                defaultValor={intentoActual + 1}
+                onChange={cambiarIntento}
+                minimo={1}
+                maximo={resultados.length}
+                etiqueta="Número de Intento"
+              />
+            </div>
 
-        {/* Botones de Control */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem",
-          }}
-        >
-          <Boton
-            texto="Volver al Inicio"
-            onClick={() => cambiarPagina("previsualizar")}
-          />
+            {/* Colorear Nodo Manual */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.8rem",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "0.95rem",
+                  fontWeight: "600",
+                  color: "#333",
+                  margin: 0,
+                }}
+              >
+                Colorear Nodo Manual
+              </h3>
+              <div>
+                <label
+                  style={{
+                    color: "#333",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    display: "block",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Color
+                </label>
+                <select
+                  value={colorSeleccionado}
+                  onChange={(e) => setColorSeleccionado(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    fontSize: "0.9rem",
+                    border: "2px solid #e0e0e0",
+                    borderRadius: "8px",
+                    outline: "none",
+                    color: "#333",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value="Azul">Azul</option>
+                  <option value="Amarillo">Amarillo</option>
+                  <option value="Morado">Morado</option>
+                </select>
+              </div>
+              <EntradaNumerica
+                defaultValor={idNodo}
+                onChange={setIdNodo}
+                minimo={0}
+                maximo={grafo.nodos.length - 1}
+                etiqueta="ID del Nodo"
+              />
+              <Boton texto="Aplicar Color" onClick={pintarNodoManual} />
+              <Boton
+                texto="Volver al Inicio"
+                onClick={() => cambiarPagina("previsualizar")}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
