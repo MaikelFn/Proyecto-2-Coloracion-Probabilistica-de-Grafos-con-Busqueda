@@ -123,7 +123,7 @@ export function LasVegasColoracion(grafo: Grafo): [
 
     historial.push({ intento: intentos, conflictos, mapa_colores });
 
-    if (conflictos === 0) {
+    if (conflictos === 0 || intentos >= 100000) {
       break;
     }
   }

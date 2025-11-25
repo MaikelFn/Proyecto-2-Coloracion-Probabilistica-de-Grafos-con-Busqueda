@@ -5,7 +5,12 @@ type PrevisualizarProps = {
   nodos: Array<[number, string | null]>;
   aristas: Array<[number, number, boolean]>;
   cambiarPagina: (
-    pagina: "menu" | "generarAleatorio" | "previsualizar" | "monteCarlo"
+    pagina:
+      | "menu"
+      | "generarAleatorio"
+      | "previsualizar"
+      | "monteCarlo"
+      | "lasVegas"
   ) => void;
 };
 function Previsualizar({ nodos, aristas, cambiarPagina }: PrevisualizarProps) {
@@ -74,7 +79,10 @@ function Previsualizar({ nodos, aristas, cambiarPagina }: PrevisualizarProps) {
               texto="Monte Carlo"
               onClick={() => cambiarPagina("monteCarlo")}
             />
-            <Boton texto="Las Vegas" onClick={() => alert("Próximamente...")} />
+            <Boton
+              texto="Las Vegas"
+              onClick={() => cambiarPagina("lasVegas")}
+            />
             <div
               style={{
                 borderTop: "2px solid #e0e0e0",

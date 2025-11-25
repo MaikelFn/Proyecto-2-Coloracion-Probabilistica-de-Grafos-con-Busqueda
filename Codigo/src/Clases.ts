@@ -74,9 +74,10 @@ export class Grafo {
     }
   }
   obtener_conexiones() {
+    this.validar_aristas();
     const conexiones = [];
     for (const arista of this.aristas) {
-      conexiones.push([arista.nodo1.id, arista.nodo2.id]);
+      conexiones.push([arista.nodo1.id, arista.nodo2.id, arista.conflicto]);
     }
     return conexiones;
   }

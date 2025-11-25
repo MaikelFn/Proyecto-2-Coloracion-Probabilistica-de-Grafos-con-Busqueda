@@ -3,9 +3,9 @@ import Boton from "../Componentes/Boton";
 import EntradaNumerica from "../Componentes/EntradaNumerica";
 import Grafo from "../Componentes/Grafo";
 import { Grafo as GrafoClass } from "../Clases";
-import { MonteCarloColoracion } from "../logica";
+import { LasVegasColoracion } from "../logica";
 
-type MonteCarloProps = {
+type LasVegasProps = {
   grafo: GrafoClass;
   cambiarPagina: (
     pagina: "menu" | "generarAleatorio" | "previsualizar"
@@ -18,24 +18,20 @@ type Resultado = {
   mapa_colores: { [key: number]: string | null };
 };
 
-function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
-  const [intentos, setIntentos] = useState<number>(1000);
+function LasVegas({ grafo, cambiarPagina }: LasVegasProps) {
   const [ejecutado, setEjecutado] = useState<boolean>(false);
   const [resultados, setResultados] = useState<Resultado[]>([]);
   const [tiempoTotal, setTiempoTotal] = useState<number>(0);
-  const [exitos, setExitos] = useState<number>(0);
+  const [intentosRealizados, setIntentosRealizados] = useState<number>(0);
   const [intentoActual, setIntentoActual] = useState<number>(0);
   const [idNodo, setIdNodo] = useState<number>(0);
   const [colorSeleccionado, setColorSeleccionado] = useState<string>("Azul");
 
-  const ejecutarMonteCarlo = () => {
-    const [historial, tiempo, exitosTotal] = MonteCarloColoracion(
-      grafo,
-      intentos
-    );
+  const ejecutarLasVegas = () => {
+    const [historial, tiempo, intentos] = LasVegasColoracion(grafo);
     setResultados(historial);
     setTiempoTotal(tiempo);
-    setExitos(exitosTotal);
+    setIntentosRealizados(intentos);
     setIntentoActual(intentos - 1);
     setEjecutado(true);
   };
@@ -105,7 +101,7 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
               textAlign: "center",
             }}
           >
-            Algoritmo Monte Carlo
+            Algoritmo Las Vegas
           </h1>
           <p
             style={{
@@ -115,17 +111,8 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
               textAlign: "center",
             }}
           >
-            Configura y ejecuta el algoritmo probabilístico
+            Ejecuta hasta encontrar una solución válida
           </p>
-
-          <div style={{ marginBottom: "2rem" }}>
-            <EntradaNumerica
-              defaultValor={intentos}
-              onChange={setIntentos}
-              minimo={1}
-              etiqueta="Cantidad de Intentos"
-            />
-          </div>
 
           <div
             style={{
@@ -134,7 +121,7 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
               justifyContent: "center",
             }}
           >
-            <Boton texto="Ejecutar" onClick={ejecutarMonteCarlo} />
+            <Boton texto="Ejecutar" onClick={ejecutarLasVegas} />
             <Boton
               texto="Volver"
               onClick={() => cambiarPagina("previsualizar")}
@@ -178,7 +165,7 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
         <Grafo nodos={nodos} aristas={aristas} />
       </div>
 
-      {/* Panel Derecho Estadísticas y Controles */}
+      {/* Panel Derecho - Grid de Estadísticas y Controles */}
       <div
         style={{
           flex: 1,
@@ -212,7 +199,8 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
             style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
           >
             <p style={{ color: "#666", fontSize: "0.85rem" }}>
-              <strong>Intento:</strong> {resultadoActual.intento} / {intentos}
+              <strong>Intento:</strong> {resultadoActual.intento} /{" "}
+              {intentosRealizados}
             </p>
             <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Conflictos:</strong> {estadisticas.total_conflictos}
@@ -263,21 +251,20 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
             style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
           >
             <p style={{ color: "#666", fontSize: "0.85rem" }}>
-              <strong>Total de Intentos:</strong> {intentos}
-            </p>
-            <p style={{ color: "#666", fontSize: "0.85rem" }}>
-              <strong>Intentos Exitosos:</strong> {exitos}
-            </p>
-            <p style={{ color: "#666", fontSize: "0.85rem" }}>
-              <strong>Tasa de Éxito:</strong>{" "}
-              {((exitos / intentos) * 100).toFixed(2)}%
+              <strong>Intentos Necesarios:</strong> {intentosRealizados}
             </p>
             <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Tiempo Total:</strong> {tiempoTotal.toFixed(2)} ms
             </p>
             <p style={{ color: "#666", fontSize: "0.85rem" }}>
               <strong>Tiempo Promedio:</strong>{" "}
-              {(tiempoTotal / intentos).toFixed(2)} ms/intento
+              {(tiempoTotal / intentosRealizados).toFixed(2)} ms/intento
+            </p>
+            <p style={{ color: "#666", fontSize: "0.85rem" }}>
+              <strong>Estado Final:</strong>{" "}
+              <span style={{ color: "#22c55e", fontWeight: "600" }}>
+                Solución Encontrada
+              </span>
             </p>
           </div>
         </div>
@@ -389,4 +376,4 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
   );
 }
 
-export default MonteCarlo;
+export default LasVegas;
