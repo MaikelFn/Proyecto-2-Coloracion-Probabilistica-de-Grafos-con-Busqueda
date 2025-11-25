@@ -4,6 +4,7 @@ import GenerarGrafoAleatorio from "./Paginas/Generargrafoa";
 import GrafoManual from "./Paginas/GrafoManual";
 import Previsualizar from "./Paginas/Prev";
 import MonteCarlo from "./Paginas/MonteCarlo";
+import LasVegas from "./Paginas/LasVegas";
 import { GrafoAleatorio, GrafoManual as crearGrafoManual } from "./logica";
 import { Grafo } from "./Clases";
 
@@ -12,7 +13,8 @@ type Pagina =
   | "generarAleatorio"
   | "grafoManual"
   | "previsualizar"
-  | "monteCarlo";
+  | "monteCarlo"
+  | "lasVegas";
 
 function App() {
   const [paginaActual, setPaginaActual] = useState<Pagina>("menu");
@@ -70,6 +72,14 @@ function App() {
 
   if (paginaActual === "monteCarlo" && grafoActual) {
     return <MonteCarlo grafo={grafoActual} cambiarPagina={cambiarPagina} />;
+  }
+
+  if (paginaActual === "monteCarlo" && grafoActual) {
+    return <MonteCarlo grafo={grafoActual} cambiarPagina={cambiarPagina} />;
+  }
+
+  if (paginaActual === "lasVegas" && grafoActual) {
+    return <LasVegas grafo={grafoActual} cambiarPagina={cambiarPagina} />;
   }
 
   return null;
