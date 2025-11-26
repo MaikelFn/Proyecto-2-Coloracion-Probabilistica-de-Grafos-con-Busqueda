@@ -6,14 +6,37 @@ type EntradaNumericaProps = {
   defaultValor?: number;
   etiqueta?: string;
   name?: string;
+  soloEnteros?: boolean;   // 🔹 NUEVO
   onChange?: (valor: number) => void;
 };
 
 function EntradaNumerica(props: EntradaNumericaProps) {
-  const [value, setValue] = useState(props.defaultValor);
+  const [value, setValue] = useState<number | "">(props.defaultValor ?? "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const nuevoValor = Number(event.target.value);
+    const texto = event.target.value;
+
+    if (texto === "") {
+      setValue("");
+      return;
+    }
+
+    let nuevoValor = Number(texto);
+
+    if (isNaN(nuevoValor)) return;
+
+    if (props.soloEnteros) {
+      nuevoValor = Math.trunc(nuevoValor);
+    }
+
+    if (props.minimo !== undefined && nuevoValor < props.minimo) {
+      nuevoValor = props.minimo;
+    }
+
+    if (props.maximo !== undefined && nuevoValor > props.maximo) {
+      nuevoValor = props.maximo;
+    }
+
     setValue(nuevoValor);
     props.onChange?.(nuevoValor);
   };
@@ -39,6 +62,7 @@ function EntradaNumerica(props: EntradaNumericaProps) {
         name={props.name}
         value={value}
         type="number"
+        step={props.soloEnteros ? "1" : "any"}   // 🔹 Control de decimales
         onChange={handleChange}
         min={props.minimo}
         max={props.maximo}
@@ -62,4 +86,5 @@ function EntradaNumerica(props: EntradaNumericaProps) {
     </div>
   );
 }
+
 export default EntradaNumerica;

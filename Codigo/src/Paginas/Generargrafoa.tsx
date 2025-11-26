@@ -9,12 +9,36 @@ type GenerarGrafoAleatorioProps = {
     pagina: "menu" | "generarAleatorio" | "previsualizar"
   ) => void;
 };
+
 function GenerarGrafoAleatorio({
   GenerarGrafoA,
   cambiarPagina,
 }: GenerarGrafoAleatorioProps) {
+
   const [CantNodos, setCantNodos] = useState<number>(60);
   const [ProbConex, setProbConex] = useState<number>(0.02);
+  const [error, setError] = useState<string>("");
+
+  const validar = (): boolean => {
+
+    if (isNaN(CantNodos) || CantNodos <= 0) {
+      setError("El número de nodos debe ser mayor que 0.");
+      return false;
+    }
+
+    if (isNaN(ProbConex) || ProbConex < 0 || ProbConex > 1) {
+      setError("La probabilidad debe estar entre 0 y 1.");
+      return false;
+    }
+
+    setError("");
+    return true;
+  };
+
+  const generar = () => {
+    if (!validar()) return;
+    GenerarGrafoA(CantNodos, ProbConex);
+  };
 
   return (
     <div
@@ -61,21 +85,19 @@ function GenerarGrafoAleatorio({
         >
           Parámetros del grafo aleatorio
         </p>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-        >
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
           <EntradaNumerica
             etiqueta="Número de nodos"
+            soloEnteros
             onChange={(value) => setCantNodos(value)}
             name="numNodos"
-            minimo={60}
+            minimo={1}
             maximo={120}
             defaultValor={60}
           />
+
           <EntradaNumerica
             etiqueta="Probabilidad de conexión:"
             onChange={(value) => setProbConex(value)}
@@ -84,19 +106,18 @@ function GenerarGrafoAleatorio({
             maximo={1}
             defaultValor={0.02}
           />
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              marginTop: "1rem",
-            }}
-          >
-            <Boton
-              texto="Generar Grafo"
-              onClick={() => GenerarGrafoA(CantNodos, ProbConex)}
-            />
+
+          {error && (
+            <p style={{ color: "red", fontSize: "0.85rem", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
+
+          <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+            <Boton texto="Generar Grafo" onClick={generar} />
             <Boton texto="Volver" onClick={() => cambiarPagina("menu")} />
           </div>
+
         </div>
       </div>
     </div>
