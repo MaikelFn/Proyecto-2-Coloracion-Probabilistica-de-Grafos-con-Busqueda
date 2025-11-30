@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Boton from "../Componentes/Boton";
 
 type GrafoManualProps = {
@@ -13,10 +13,18 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
   const [aristas, setAristas] = useState<[number, number][]>([]);
   const [nodo1, setNodo1] = useState<string>("");
   const [nodo2, setNodo2] = useState<string>("");
+  const [mensajeValidacion, setMensajeValidacion] = useState<string | null>(
+    null
+  );
 
   const agregarNodo = () => {
     // Buscar el siguiente ID disponible
     const nuevoId = nodos.length === 0 ? 0 : Math.max(...nodos) + 1;
+    if (nuevoId < 0) {
+      setMensajeValidacion("No se permiten IDs negativos.");
+      return;
+    }
+    setMensajeValidacion(null);
     setNodos([...nodos, nuevoId]);
   };
 
@@ -24,39 +32,126 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     setNodos(nodos.filter((n) => n !== id));
     // Eliminar aristas que incluyan este nodo
     setAristas(aristas.filter(([id1, id2]) => id1 !== id && id2 !== id));
+    setMensajeValidacion(null);
   };
 
   const agregarArista = () => {
-    const id1 = parseInt(nodo1);
-    const id2 = parseInt(nodo2);
+    const id1 = parseInt(nodo1, 10);
+    const id2 = parseInt(nodo2, 10);
 
-    if (
-      !isNaN(id1) &&
-      !isNaN(id2) &&
-      id1 !== id2 &&
-      nodos.includes(id1) &&
-      nodos.includes(id2)
-    ) {
-      // Verificar que la arista no exista ya
-      const aristaExiste = aristas.some(
-        ([a, b]) => (a === id1 && b === id2) || (a === id2 && b === id1)
-      );
-      if (!aristaExiste) {
-        setAristas([...aristas, [id1, id2]]);
-        setNodo1("");
-        setNodo2("");
-      }
+    // Validaciones: no NaN, no negativos, no self-loop, nodos existentes
+    if (isNaN(id1) || isNaN(id2)) {
+      setMensajeValidacion("Ingrese IDs válidos para ambos nodos.");
+      return;
     }
+    if (id1 < 0 || id2 < 0) {
+      setMensajeValidacion("No se permiten valores negativos.");
+      return;
+    }
+    if (id1 === id2) {
+      setMensajeValidacion("No se permiten self-loops (nodo conectado a sí mismo).");
+      return;
+    }
+    if (!nodos.includes(id1) || !nodos.includes(id2)) {
+      setMensajeValidacion("Ambos nodos deben existir antes de crear la arista.");
+      return;
+    }
+
+    // Verificar que la arista no exista ya
+    const aristaExiste = aristas.some(
+      ([a, b]) => (a === id1 && b === id2) || (a === id2 && b === id1)
+    );
+    if (aristaExiste) {
+      setMensajeValidacion("La arista ya existe.");
+      return;
+    }
+
+    // Todo OK: añadir arista
+    setAristas([...aristas, [id1, id2]]);
+    setNodo1("");
+    setNodo2("");
+    setMensajeValidacion(null);
   };
 
   const eliminarArista = (index: number) => {
     setAristas(aristas.filter((_, i) => i !== index));
+    setMensajeValidacion(null);
   };
 
-  const generarGrafo = () => {
-    if (nodos.length > 0) {
-      GenerarGrafoM(nodos, aristas);
+  // Detectar nodos aislados (sin aristas)
+  const nodosAislados = useMemo(() => {
+    const conectados = new Set<number>();
+    for (const [a, b] of aristas) {
+      conectados.add(a);
+      conectados.add(b);
     }
+    return nodos.filter((id) => !conectados.has(id));
+  }, [nodos, aristas]);
+
+  // Comprobar si el grafo es conexo (BFS desde el primer nodo)
+  const componentePrincipalYNoConectados = useMemo(() => {
+    if (nodos.length === 0) return { esConexo: false, noConectados: [] as number[] };
+
+    // Construir mapa de adyacencia
+    const adj: { [key: number]: number[] } = {};
+    for (const id of nodos) adj[id] = [];
+    for (const [a, b] of aristas) {
+      if (adj[a]) adj[a].push(b);
+      if (adj[b]) adj[b].push(a);
+    }
+
+    // BFS desde el primer nodo (nodos[0])
+    const inicio = nodos[0];
+    const visitado = new Set<number>();
+    const queue: number[] = [inicio];
+    visitado.add(inicio);
+    while (queue.length > 0) {
+      const u = queue.shift() as number;
+      for (const v of adj[u] ?? []) {
+        if (!visitado.has(v)) {
+          visitado.add(v);
+          queue.push(v);
+        }
+      }
+    }
+
+    // Nodos no alcanzados desde la componente principal
+    const noConectados = nodos.filter((id) => !visitado.has(id));
+    const esConexo = noConectados.length === 0;
+
+    return { esConexo, noConectados };
+  }, [nodos, aristas]);
+
+  // Validación para generar grafo: al menos 20 nodos, y que sea conexo y sin nodos aislados
+  const puedeGenerar = useMemo(() => {
+    if (nodos.length < 20) return false;
+    if (nodosAislados.length > 0) return false;
+    if (!componentePrincipalYNoConectados.esConexo) return false;
+    return true;
+  }, [nodos, nodosAislados, componentePrincipalYNoConectados]);
+
+  const generarGrafo = () => {
+    // Validaciones finales
+    if (nodos.length < 20) {
+      setMensajeValidacion("Se requieren al menos 20 nodos para generar el grafo.");
+      return;
+    }
+    if (nodosAislados.length > 0) {
+      setMensajeValidacion(
+        `Hay nodos aislados: ${nodosAislados.join(", ")}. Conéctelos antes de generar.`
+      );
+      return;
+    }
+
+    if (!componentePrincipalYNoConectados.esConexo) {
+      setMensajeValidacion(
+        `El grafo no es conexo. Nodos fuera de la componente principal: ${componentePrincipalYNoConectados.noConectados.join(", ")}.`
+      );
+      return;
+    }
+
+    setMensajeValidacion(null);
+    GenerarGrafoM(nodos, aristas);
   };
 
   return (
@@ -205,6 +300,7 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
             >
               <input
                 type="number"
+                min={0}
                 value={nodo1}
                 onChange={(e) => setNodo1(e.target.value)}
                 placeholder="Nodo 1"
@@ -221,6 +317,7 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
               />
               <input
                 type="number"
+                min={0}
                 value={nodo2}
                 onChange={(e) => setNodo2(e.target.value)}
                 placeholder="Nodo 2"
@@ -234,7 +331,7 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
                   outline: "none",
                   color: "#333",
                 }}
-                onKeyPress={(e) => e.key === "Enter" && agregarArista()}
+                onKeyDown={(e) => e.key === "Enter" && agregarArista()}
               />
               <button
                 onClick={agregarArista}
@@ -303,6 +400,53 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
           </div>
         </div>
 
+        {/* Mensajes de validación */}
+        <div style={{ marginTop: "1rem" }}>
+          {!puedeGenerar && (
+            <div
+              style={{
+                padding: "12px",
+                borderRadius: "8px",
+                background: "#fff3cd",
+                color: "#856404",
+                border: "1px solid #ffeeba",
+                marginBottom: "1rem",
+              }}
+            >
+              {nodos.length < 20 && (
+                <div>Se requieren al menos 20 nodos (act.: {nodos.length}).</div>
+              )}
+              {nodosAislados.length > 0 && (
+                <div>
+                  Nodos aislados: {nodosAislados.join(", ")}. Conéctelos antes
+                  de generar.
+                </div>
+              )}
+              {!componentePrincipalYNoConectados.esConexo && (
+                <div>
+                  El grafo no es conexo. Nodos fuera de la componente principal:{" "}
+                  {componentePrincipalYNoConectados.noConectados.join(", ")}.
+                </div>
+              )}
+            </div>
+          )}
+
+          {mensajeValidacion && (
+            <div
+              style={{
+                padding: "12px",
+                borderRadius: "8px",
+                background: "#f8d7da",
+                color: "#721c24",
+                border: "1px solid #f5c6cb",
+                marginBottom: "1rem",
+              }}
+            >
+              {mensajeValidacion}
+            </div>
+          )}
+        </div>
+
         <div
           style={{
             display: "flex",
@@ -310,7 +454,33 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
             marginTop: "2rem",
           }}
         >
-          <Boton texto="Generar Grafo" onClick={generarGrafo} />
+          {puedeGenerar ? (
+            <Boton texto="Generar Grafo" onClick={generarGrafo} />
+          ) : (
+            <button
+              disabled
+              style={{
+                width: "100%",
+                padding: "12px 24px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                color: "white",
+                background: "#bdbdbd",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "not-allowed",
+                boxShadow: "none",
+              }}
+              title={
+                nodos.length < 20
+                  ? "Se requieren al menos 20 nodos"
+                  : "Existen nodos aislados o el grafo no es conexo"
+              }
+            >
+              Generar Grafo
+            </button>
+          )}
+
           <Boton texto="Volver" onClick={() => cambiarPagina("menu")} />
         </div>
       </div>
