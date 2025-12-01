@@ -6,9 +6,26 @@ type EntradaNumericaProps = {
   defaultValor?: number;
   etiqueta?: string;
   name?: string;
-  soloEnteros?: boolean;   // 🔹 NUEVO
+  soloEnteros?: boolean;   
   onChange?: (valor: number) => void;
 };
+
+/**
+ * Componente EntradaNumerica
+ *
+ * Componente controlado para ingresar valores numéricos con opciones de:
+ * - mínimo / máximo
+ * - valor por defecto
+ * - permitir solo enteros (props.soloEnteros)
+ * - callback onChange con el número final
+ *
+ * Notas generales:
+ * - Mantiene el estado interno `value` que puede ser `""` (campo vacío) o un número.
+ * - Convierte la entrada a Number() y valida NaN; si `soloEnteros` está activado se trunca
+ *   el valor con Math.trunc().
+ * - Aplica "clamping" al rango [minimo, maximo] si se proporcionan esas props.
+ * - Llama `props.onChange` con el valor numérico únicamente cuando la entrada es válida.
+ */
 
 function EntradaNumerica(props: EntradaNumericaProps) {
   const [value, setValue] = useState<number | "">(props.defaultValor ?? "");

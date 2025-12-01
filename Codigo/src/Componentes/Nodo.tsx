@@ -7,6 +7,18 @@ type NodoProps = {
   color: Color;
 };
 
+/**
+ * Componente visual que representa un nodo del grafo.
+ *
+ * - Es un componente presentacional, sin estado interno.
+ * - Se posiciona absolutamente en las coordenadas `x`, `y` recibidas.
+ * - Muestra el `id` dentro de un círculo y aplica un color de fondo según `color`.
+ *
+ * Notas:
+ * - El mapa `colores` asocia los nombres lógicos a códigos hex (colores de la UI).
+ * - Si `color` es `null`, se usa un color por defecto (en este código: "#000000ff").
+ */
+
 function Nodo(props: NodoProps) {
   const colores = {
     Azul: "#3b82f6",

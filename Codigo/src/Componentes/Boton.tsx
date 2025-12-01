@@ -3,6 +3,18 @@ type BotonProps = {
   onClick: () => void;
 };
 
+/**
+ * Componente visual reutilizable que renderiza un botón estilizado.
+ *
+ * Características principales:
+ * - Efecto visual al pasar el ratón (elevación mediante transform y cambio de shadow).
+ * - Comportamiento controlado: recibe el texto y la función a ejecutar en onClick.
+ *
+ * Notas de implementación:
+ * - Es un componente puramente presentacional (sin estado interno).
+ * - Las transformaciones y cambios de shadow se realizan manipulando `e.currentTarget.style` en
+ *   los handlers onMouseEnter / onMouseLeave para un efecto sencillo y directo.
+ */
 function Boton(props: BotonProps) {
   return (
     <button
