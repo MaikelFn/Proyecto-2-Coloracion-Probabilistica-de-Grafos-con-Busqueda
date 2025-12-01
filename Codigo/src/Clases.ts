@@ -1,3 +1,12 @@
+/**
+ * Clase Nodo
+ *
+ * Representa un vértice del grafo con:
+ * - id: identificador numérico
+ * - color: nombre del color asignado o null si no tiene color
+ * - vecinos: lista de referencias a nodos adyacentes
+ * - numvecinos: contador redundante del número de vecinos (mantenido manualmente)
+ */
 export class Nodo {
   id: number;
   color: string | null;
@@ -37,6 +46,14 @@ export class Nodo {
     return contador;
   }
 }
+
+/**
+ * Clase Arista
+ *
+ * Representa una arista no dirigida entre dos nodos.
+ * - nodo1, nodo2: referencias a instancias de Nodo.
+ * - conflicto: bandera booleana que indica si ambos extremos comparten color.
+ */
 export class Arista {
   nodo1: Nodo;
   nodo2: Nodo;
@@ -47,6 +64,20 @@ export class Arista {
     this.conflicto = false;
   }
 }
+
+/**
+ * Clase Grafo
+ *
+ * Estructura que contiene nodos y aristas y ofrece utilidades para:
+ * - añadir/eliminar nodos y aristas
+ * - coloreo aleatorio del grafo
+ * - validación de aristas/conflictos
+ * - obtención de estadísticas y listados
+ *
+ * Observaciones:
+ * - `colores` define la paleta disponible (por defecto 3 colores).
+ * - Varias operaciones mutan el grafo (colorear, recolorear, añadir/aristas, etc.).
+ */
 export class Grafo {
   nodos: Nodo[];
   aristas: Arista[];
