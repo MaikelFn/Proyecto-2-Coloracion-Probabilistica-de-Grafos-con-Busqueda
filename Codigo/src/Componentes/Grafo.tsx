@@ -6,6 +6,23 @@ type GrafoProps = {
   aristas: Array<[number, number, boolean]>;
 };
 
+/**
+ * Componente Grafo
+ *
+ * Renderiza una representación visual simple de un grafo usando:
+ * - un grid automático para ubicar nodos (posición calculada a partir del índice),
+ * - un <svg> para dibujar las aristas (líneas),
+ * - componentes `Nodo` posicionados absolutamente para cada vértice.
+ *
+ * Notas de implementación:
+ * - `nodos`: Array de tuplas [id, color] donde:
+ *     - id: number (debe ser único para cada nodo)
+ *     - color: string | null (por ejemplo "Azul" | "Amarillo" | "Morado" | null)
+ * - `aristas`: Array de tuplas [id1, id2, conflicto] donde:
+ *     - id1, id2: números que referencian `id` en `nodos`
+ *     - conflicto: boolean que indica si esa arista debe mostrarse en rojo
+ */
+
 function Grafo({ nodos, aristas }: GrafoProps) {
   const posiciones: { [key: number]: { x: number; y: number } } = {};
   const nodosRenderizados = [];
