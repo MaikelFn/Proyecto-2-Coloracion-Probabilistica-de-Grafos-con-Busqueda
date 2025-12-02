@@ -4,6 +4,18 @@ type MenuProps = {
   cambiarPagina: (pagina: "menu" | "generarAleatorio" | "grafoManual") => void;
 };
 
+/**
+ * Componente `Menu`.
+ *
+ * Pantalla principal del sistema.
+ *
+ * Responsabilidades:
+ * - Mostrar opciones de generación de grafos.
+ * - Redirigir a generación aleatoria o manual.
+ *
+ * No contiene lógica de negocio,
+ * únicamente navegación visual.
+ */
 function Menu({ cambiarPagina }: MenuProps) {
   return (
     <div

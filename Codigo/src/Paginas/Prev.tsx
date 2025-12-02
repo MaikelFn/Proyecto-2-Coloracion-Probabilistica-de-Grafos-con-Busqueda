@@ -13,6 +13,20 @@ type PrevisualizarProps = {
       | "lasVegas"
   ) => void;
 };
+
+/**
+ * Componente `Previsualizar`.
+ *
+ * Pantalla de inspección previa del grafo generado.
+ *
+ * Funciones:
+ * - Renderizar el grafo usando el componente `Grafo`.
+ * - Brindar acceso a selección de algoritmos.
+ * - Permitir volver al menú principal.
+ *
+ * No ejecuta algoritmos,
+ * solo visualiza la estructura actual del grafo.
+ */
 function Previsualizar({ nodos, aristas, cambiarPagina }: PrevisualizarProps) {
   return (
     <div

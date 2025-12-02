@@ -18,6 +18,23 @@ type Resultado = {
   mapa_colores: { [key: number]: string | null };
 };
 
+/**
+ * Componente `LasVegas`.
+ *
+ * Interfaz visual para ejecutar y visualizar resultados del algoritmo Las Vegas
+ * sobre un grafo ya generado.
+ *
+ * Responsabilidades:
+ * - Ejecutar el algoritmo una sola vez.
+ * - Almacenar y mostrar los resultados de cada intento.
+ * - Permitir navegar entre intentos realizados.
+ * - Mostrar estadísticas globales y por intento.
+ * - Permitir modificación manual de colores.
+ *
+ * Este componente NO controla el ciclo interno del algoritmo,
+ * únicamente consume los resultados generados por `LasVegasColoracion`.
+ */
+
 function LasVegas({ grafo, cambiarPagina }: LasVegasProps) {
   const [ejecutado, setEjecutado] = useState<boolean>(false);
   const [resultados, setResultados] = useState<Resultado[]>([]);
@@ -27,6 +44,19 @@ function LasVegas({ grafo, cambiarPagina }: LasVegasProps) {
   const [idNodo, setIdNodo] = useState<number>(0);
   const [colorSeleccionado, setColorSeleccionado] = useState<string>("Azul");
 
+  /**
+   * Ejecuta el algoritmo Las Vegas sobre el grafo actual.
+   *
+   * Flujo:
+   * - Llama a `LasVegasColoracion(grafo)`.
+   * - Almacena el historial completo de intentos.
+   * - Guarda tiempo total de ejecución.
+   * - Guarda número de intentos realizados.
+   * - Activa el modo de visualización de resultados.
+   *
+   * Nota:
+   * - La condición de parada del algoritmo NO se controla aquí.
+   */
   const ejecutarLasVegas = () => {
     const [historial, tiempo, intentos] = LasVegasColoracion(grafo);
     setResultados(historial);
@@ -36,6 +66,12 @@ function LasVegas({ grafo, cambiarPagina }: LasVegasProps) {
     setEjecutado(true);
   };
 
+  /**
+   * Cambia el intento actualmente mostrado.
+   *
+   * Convierte el índice humano (1-based) a índice interno (0-based)
+   * y valida que el intento exista antes de actualizar el estado.
+   */
   const cambiarIntento = (valor: number) => {
     const nuevoIntento = valor - 1;
     if (nuevoIntento >= 0 && nuevoIntento < resultados.length) {
@@ -43,6 +79,16 @@ function LasVegas({ grafo, cambiarPagina }: LasVegasProps) {
     }
   };
 
+  /**
+   * Permite recolorear manualmente un nodo.
+   *
+   * Flujo:
+   * - Busca el nodo por ID.
+   * - Cambia su color.
+   * - Valida todas las aristas afectadas.
+   * - Recalcula conflictos.
+   * - Actualiza el resultado actual sin modificar el historial original.
+   */
   const pintarNodoManual = () => {
     let nodo = null;
     for (let i = 0; i < grafo.nodos.length; i++) {

@@ -18,6 +18,21 @@ type Resultado = {
   mapa_colores: { [key: number]: string | null };
 };
 
+/**
+ * Componente `MonteCarlo`.
+ *
+ * Interfaz para ejecutar el algoritmo Monte Carlo de coloración sobre un grafo.
+ *
+ * Responsabilidades:
+ * - Permitir definir la cantidad de intentos.
+ * - Ejecutar coloraciones aleatorias múltiples veces.
+ * - Mostrar resultados estadísticos por intento y globales.
+ * - Permitir inspección manual de cada intento.
+ * - Habilitar recoloración manual de nodos.
+ *
+ * Este componente no implementa el algoritmo,
+ * solo visualiza los datos producidos por `MonteCarloColoracion`.
+ */
 function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
   const [intentos, setIntentos] = useState<number>(1000);
   const [ejecutado, setEjecutado] = useState<boolean>(false);
@@ -28,6 +43,16 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
   const [idNodo, setIdNodo] = useState<number>(0);
   const [colorSeleccionado, setColorSeleccionado] = useState<string>("Azul");
 
+    /**
+   * Ejecuta el algoritmo Monte Carlo sobre el grafo.
+   *
+   * Flujo:
+   * - Llama a `MonteCarloColoracion` pasando el grafo y el número de intentos.
+   * - Guarda el historial completo de ejecuciones.
+   * - Registra el tiempo total.
+   * - Registra la cantidad de ejecuciones exitosas.
+   * - Cambia la vista al modo de resultados.
+   */
   const ejecutarMonteCarlo = () => {
     const [historial, tiempo, exitosTotal] = MonteCarloColoracion(
       grafo,
@@ -40,6 +65,14 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
     setEjecutado(true);
   };
 
+    /**
+   * Cambia el intento actualmente visualizado.
+   *
+   * Convierte el número ingresado por el usuario (1-based)
+   * al índice interno del arreglo (0-based).
+   *
+   * Verifica que el intento exista antes de actualizar el estado.
+   */
   const cambiarIntento = (valor: number) => {
     const nuevoIntento = valor - 1;
     if (nuevoIntento >= 0 && nuevoIntento < resultados.length) {
@@ -47,6 +80,18 @@ function MonteCarlo({ grafo, cambiarPagina }: MonteCarloProps) {
     }
   };
 
+  /**
+ * Permite modificar manualmente el color de un nodo.
+ *
+ * Lógica:
+ * - Busca el nodo por su ID.
+ * - Aplica el nuevo color.
+ * - Revalida las aristas del grafo.
+ * - Actualiza el registro del intento actual.
+ *
+ * Esto no altera el historial anterior,
+ * solo modifica el estado visible.
+ */
   const pintarNodoManual = () => {
     let nodo = null;
     for (let i = 0; i < grafo.nodos.length; i++) {
