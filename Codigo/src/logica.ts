@@ -1,5 +1,23 @@
 import { Nodo, Grafo } from "./Clases";
 
+/**
+ * Genera un grafo no dirigido de forma aleatoria.
+ *
+ * Comportamiento:
+ * - Crea `numNodos` nodos con IDs consecutivos desde 0.
+ * - Intenta conectar cada nodo con una cantidad de vecinos estimada a partir de
+ *   `probabilidadArista * numNodos`, garantizando al menos 3 vecinos por nodo.
+ * - Evita aristas duplicadas y self-loops.
+ * - Recorre todos los nodos al final para asegurarse de que ninguno quede sin vecinos,
+ *   conectando cualquier nodo aislado con un nodo aleatorio distinto.
+ *
+ * Parámetros:
+ * - numNodos: cantidad total de nodos a generar.
+ * - probabilidadArista: factor que controla la densidad de conexiones del grafo.
+ *
+ * Retorna:
+ * - Una instancia de `Grafo` conectada y sin nodos completamente aislados.
+ */
 export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   const grafo = new Grafo();
   for (let i = 0; i < numNodos; i++) {
@@ -39,6 +57,22 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   return grafo;
 }
 
+/**
+ * Construye un grafo no dirigido a partir de listas de nodos y aristas.
+ *
+ * Comportamiento:
+ * - Crea nodos a partir del arreglo `idsNodos`.
+ * - Recorre la lista de aristas `[id1, id2]` para conectar los nodos
+ *   correspondientes, siempre que ambos existan y no sean el mismo.
+ * - Evita duplicar aristas comprobando si ya existe el vecino antes de añadirlo.
+ *
+ * Parámetros:
+ * - idsNodos: arreglo con los identificadores de todos los nodos que formarán el grafo.
+ * - aristas: arreglo de pares `[id1, id2]` que representan conexiones no dirigidas.
+ *
+ * Retorna:
+ * - Una instancia de `Grafo` construida según los datos provistos.
+ */
 export function GrafoManual(
   idsNodos: number[],
   aristas: [number, number][]
@@ -64,6 +98,26 @@ export function GrafoManual(
   return grafo;
 }
 
+/**
+ * Ejecuta un esquema de coloración tipo Monte Carlo sobre un grafo.
+ *
+ * Comportamiento:
+ * - Realiza `iteraciones` independientes.
+ * - En cada iteración:
+ *   - Aplica una coloración aleatoria al grafo.
+ *   - Calcula el número de conflictos (aristas con ambos extremos del mismo color).
+ *   - Guarda el intento en el historial junto con el mapa de colores.
+ *   - Incrementa el contador de éxitos si no hay conflictos.
+ *
+ * Parámetros:
+ * - grafo: instancia de `Grafo` sobre la cual se realizan las coloraciones.
+ * - iteraciones: número de ejecuciones independientes a realizar.
+ *
+ * Retorna:
+ * - historial: arreglo con la información de cada intento (número, conflictos, mapa de colores).
+ * - tiempoTotal: tiempo total requerido para todas las iteraciones (en milisegundos).
+ * - exitos: cantidad de coloraciones sin conflictos encontradas.
+ */
 export function MonteCarloColoracion(
   grafo: Grafo,
   iteraciones: number
@@ -98,7 +152,29 @@ export function MonteCarloColoracion(
   return [Historial, TiempoTotal, exitos];
 }
 
-export function LasVegasColoracion(grafo: Grafo): [
+/**
+ * Ejecuta el algoritmo de coloración tipo Las Vegas sobre un grafo.
+ *
+ * Comportamiento:
+ * - Recolorea el grafo aleatoriamente en cada intento.
+ * - Registra el número de conflictos y el mapa de colores de cada intento.
+ * - Se detiene cuando:
+ *   - Se encuentra una solución sin conflictos, o
+ *   - Se alcanza el número máximo de intentos permitido (`maxIntentos`).
+ *
+ * Parámetros:
+ * - grafo: instancia de `Grafo` sobre la que se aplica la coloración.
+ * - maxIntentos: límite superior de intentos permitidos para evitar bucles infinitos.
+ *
+ * Retorna:
+ * - historial: arreglo con la información de cada intento (número, conflictos, mapa de colores).
+ * - tiempoTotal: tiempo total de ejecución en milisegundos.
+ * - intentos: número de intentos realizados hasta detener el algoritmo.
+ */
+export function LasVegasColoracion(
+  grafo: Grafo,
+  maxIntentos: number = 100000
+): [
   Array<{
     intento: number;
     conflictos: number;
@@ -108,23 +184,27 @@ export function LasVegasColoracion(grafo: Grafo): [
   number
 ] {
   let intentos = 0;
+  let solucionEncontrada = false;
+
   const historial: Array<{
     intento: number;
     conflictos: number;
     mapa_colores: { [key: number]: string | null };
   }> = [];
+
   const TiempoInicio = performance.now();
 
-  while (true) {
+  while (!solucionEncontrada && intentos < maxIntentos) {
     intentos += 1;
+
     grafo.colorear_grafo();
     const conflictos = grafo.total_conflictos();
     const mapa_colores = grafo.obtener_colores();
 
     historial.push({ intento: intentos, conflictos, mapa_colores });
 
-    if (conflictos === 0 || intentos >= 100000) {
-      break;
+    if (conflictos === 0) {
+      solucionEncontrada = true;
     }
   }
 
@@ -133,3 +213,4 @@ export function LasVegasColoracion(grafo: Grafo): [
 
   return [historial, TiempoTotal, intentos];
 }
+

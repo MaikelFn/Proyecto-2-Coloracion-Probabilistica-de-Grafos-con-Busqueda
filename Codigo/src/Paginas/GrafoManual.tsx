@@ -8,6 +8,20 @@ type GrafoManualProps = {
   ) => void;
 };
 
+/**
+ * Componente `GrafoManual`.
+ *
+ * Permite construir manualmente un grafo no dirigido:
+ * - Agregar y eliminar nodos.
+ * - Agregar y eliminar aristas con validaciones básicas.
+ * - Verificar si el grafo cumple las condiciones mínimas (20 nodos, sin nodos aislados y conexo)
+ *   antes de habilitar la generación.
+ *
+ * Props:
+ * - GenerarGrafoM: función que recibe la lista de nodos y aristas para continuar el flujo de la app.
+ * - cambiarPagina: función de navegación entre pantallas del sistema.
+ */
+
 function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
   const [nodos, setNodos] = useState<number[]>([]);
   const [aristas, setAristas] = useState<[number, number][]>([]);
@@ -17,6 +31,14 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     null
   );
 
+    /**
+   * Agrega un nuevo nodo al grafo.
+   *
+   * Lógica:
+   * - Calcula el siguiente ID disponible (máximo actual + 1, o 0 si no hay nodos).
+   * - Evita IDs negativos (por seguridad, aunque el cálculo normal no los genera).
+   * - Actualiza el estado `nodos` y limpia mensajes de validación.
+   */
   const agregarNodo = () => {
     // Buscar el siguiente ID disponible
     const nuevoId = nodos.length === 0 ? 0 : Math.max(...nodos) + 1;
@@ -28,6 +50,17 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     setNodos([...nodos, nuevoId]);
   };
 
+  /**
+ * Elimina un nodo existente y sus aristas asociadas.
+ *
+ * Parámetros:
+ * - id: identificador del nodo a eliminar.
+ *
+ * Efectos:
+ * - Quita el nodo de la lista `nodos`.
+ * - Filtra todas las aristas que usen ese nodo.
+ * - Limpia cualquier mensaje de validación previo.
+ */
   const eliminarNodo = (id: number) => {
     setNodos(nodos.filter((n) => n !== id));
     // Eliminar aristas que incluyan este nodo
@@ -35,6 +68,20 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     setMensajeValidacion(null);
   };
 
+  /**
+   * Agrega una arista entre dos nodos.
+   *
+   * Validaciones:
+   * - Ambos IDs deben ser números válidos (no NaN).
+   * - No se permiten valores negativos.
+   * - No se permiten self-loops (mismo nodo en ambos extremos).
+   * - Ambos nodos deben existir en `nodos`.
+   * - No se permite duplicar aristas (ni en orden directo ni invertido).
+   *
+   * Si todo es correcto:
+   * - Agrega la arista a `aristas`.
+   * - Limpia los campos de entrada y el mensaje de validación.
+   */
   const agregarArista = () => {
     const id1 = parseInt(nodo1, 10);
     const id2 = parseInt(nodo2, 10);
@@ -73,12 +120,33 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     setMensajeValidacion(null);
   };
 
+  /**
+   * Elimina una arista según su posición en la lista.
+   *
+   * Parámetros:
+   * - index: índice de la arista en el arreglo `aristas`.
+   *
+   * Efectos:
+   * - Quita la arista seleccionada.
+   * - Limpia el mensaje de validación.
+   */
   const eliminarArista = (index: number) => {
     setAristas(aristas.filter((_, i) => i !== index));
     setMensajeValidacion(null);
   };
 
-  // Detectar nodos aislados (sin aristas)
+  /**
+   * Calcula los nodos aislados del grafo.
+   *
+   * Definición:
+   * - Nodo aislado: nodo que no aparece en ninguna arista.
+   *
+   * Implementación:
+   * - Construye un conjunto de nodos conectados a partir de `aristas`.
+   * - Devuelve los nodos que no están en ese conjunto.
+   *
+   * Se memoiza para evitar recomputar en cada render.
+   */
   const nodosAislados = useMemo(() => {
     const conectados = new Set<number>();
     for (const [a, b] of aristas) {
@@ -88,7 +156,20 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     return nodos.filter((id) => !conectados.has(id));
   }, [nodos, aristas]);
 
-  // Comprobar si el grafo es conexo (BFS desde el primer nodo)
+  /**
+   * Evalúa la conectividad del grafo mediante BFS.
+   *
+   * Proceso:
+   * - Construye una lista de adyacencia usando `nodos` y `aristas`.
+   * - Realiza una búsqueda en anchura (BFS) desde el primer nodo de la lista.
+   * - Marca todos los nodos alcanzables y determina los que quedan fuera.
+   *
+   * Retorna:
+   * - esConexo: true si todos los nodos son alcanzables desde el primero.
+   * - noConectados: arreglo de nodos que no pertenecen a la componente principal.
+   *
+   * Se memoiza para recalcular solo cuando cambien `nodos` o `aristas`.
+   */
   const componentePrincipalYNoConectados = useMemo(() => {
     if (nodos.length === 0) return { esConexo: false, noConectados: [] as number[] };
 
@@ -122,7 +203,19 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     return { esConexo, noConectados };
   }, [nodos, aristas]);
 
-  // Validación para generar grafo: al menos 20 nodos, y que sea conexo y sin nodos aislados
+    /**
+   * Determina si el grafo cumple las condiciones mínimas para ser generado.
+   *
+   * Condiciones:
+   * - Al menos 20 nodos.
+   * - Ningún nodo aislado.
+   * - El grafo debe ser conexo (según `componentePrincipalYNoConectados`).
+   *
+   * Resultado:
+   * - true si todas las condiciones se cumplen; false en caso contrario.
+   *
+   * Se usa para habilitar o deshabilitar el botón "Generar Grafo".
+   */
   const puedeGenerar = useMemo(() => {
     if (nodos.length < 20) return false;
     if (nodosAislados.length > 0) return false;
@@ -130,6 +223,17 @@ function GrafoManual({ GenerarGrafoM, cambiarPagina }: GrafoManualProps) {
     return true;
   }, [nodos, nodosAislados, componentePrincipalYNoConectados]);
 
+    /**
+   * Ejecuta la generación final del grafo manual.
+   *
+   * Flujo:
+   * - Repite las validaciones clave antes de continuar:
+   *   - Mínimo de 20 nodos.
+   *   - Sin nodos aislados.
+   *   - Grafo conexo.
+   * - Si alguna condición falla, muestra un mensaje específico en `mensajeValidacion`.
+   * - Si todo está correcto, limpia el mensaje y llama a `GenerarGrafoM(nodos, aristas)`.
+   */
   const generarGrafo = () => {
     // Validaciones finales
     if (nodos.length < 20) {

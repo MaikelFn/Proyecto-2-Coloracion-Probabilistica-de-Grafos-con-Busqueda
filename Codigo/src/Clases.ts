@@ -19,10 +19,18 @@ export class Nodo {
     this.numvecinos = 0;
   }
 
+    /**
+   * Asigna un color al nodo.
+   */
   colorear(nuevo_color: string) {
     this.color = nuevo_color;
   }
 
+    /**
+   * Registra una conexión con otro nodo.
+   *
+   * Evita duplicados.
+   */
   añadir_vecino(vecino: Nodo) {
     if (!this.vecinos.includes(vecino)) {
       this.vecinos.push(vecino);
@@ -30,6 +38,9 @@ export class Nodo {
     }
   }
 
+    /**
+   * Elimina una relación de vecindad entre nodos.
+   */
   eliminar_vecino(vecino: Nodo) {
     const indice = this.vecinos.indexOf(vecino);
     if (indice !== -1) {
@@ -38,6 +49,9 @@ export class Nodo {
     }
   }
 
+    /**
+   * Cuenta cuántos vecinos tienen el mismo color que el nodo.
+   */
   contar_conflictos() {
     let contador = 0;
     for (const vecino of this.vecinos) {
@@ -87,15 +101,29 @@ export class Grafo {
     this.aristas = [];
     this.colores = ["Azul", "Amarillo", "Morado"];
   }
+
+    /**
+   * Agrega un nodo al grafo.
+   */
   añadir_nodo(nodo: Nodo) {
     this.nodos.push(nodo);
   }
+
+    /**
+   * Conecta dos nodos mediante una arista.
+   *
+   * Actualiza vecindades.
+   */
   añadir_arista(nodo1: Nodo, nodo2: Nodo) {
     const arista = new Arista(nodo1, nodo2);
     this.aristas.push(arista);
     nodo1.añadir_vecino(nodo2);
     nodo2.añadir_vecino(nodo1);
   }
+
+    /**
+   * Elimina una arista del grafo y limpia referencias internas.
+   */
   eliminar_arista(arista: Arista) {
     const indice = this.aristas.indexOf(arista);
     if (indice !== -1) {
@@ -104,6 +132,10 @@ export class Grafo {
       arista.nodo2.eliminar_vecino(arista.nodo1);
     }
   }
+
+    /**
+   * Retorna las conexiones del grafo con indicador de conflicto.
+   */
   obtener_conexiones() {
     this.validar_aristas();
     const conexiones = [];
@@ -112,6 +144,10 @@ export class Grafo {
     }
     return conexiones;
   }
+
+    /**
+   * Retorna los nodos con su estado de color.
+   */
   obtener_nodos() {
     const ids = [];
     for (const nodo of this.nodos) {
@@ -119,6 +155,10 @@ export class Grafo {
     }
     return ids;
   }
+
+    /**
+   * Asigna colores aleatorios a todos los nodos.
+   */
   colorear_grafo() {
     for (const nodo of this.nodos) {
       const indice_Aleatorio = Math.floor(Math.random() * this.colores.length);
@@ -127,6 +167,10 @@ export class Grafo {
     }
     this.validar_aristas();
   }
+
+    /**
+   * Marca conflictos en cada arista según los colores.
+   */
   validar_aristas() {
     for (const arista of this.aristas) {
       if (arista.nodo1.color === arista.nodo2.color) {
@@ -136,6 +180,10 @@ export class Grafo {
       }
     }
   }
+
+    /**
+   * Retorna la cantidad total de aristas en conflicto.
+   */
   total_conflictos() {
     let total = 0;
     for (const arista of this.aristas) {
@@ -143,6 +191,10 @@ export class Grafo {
     }
     return total;
   }
+
+    /**
+   * Determina si el grafo es una coloración válida.
+   */
   validar_coloracion() {
     if (this.total_conflictos() === 0) {
       return true;
@@ -150,6 +202,10 @@ export class Grafo {
       return false;
     }
   }
+
+    /**
+   * Aplica un mapa externo de colores a los nodos existentes.
+   */
   recolorear_nodos(diccionario_colores: { [key: number]: string | null }) {
     for (const nodo of this.nodos) {
       if (nodo.id in diccionario_colores) {
@@ -161,6 +217,10 @@ export class Grafo {
     }
     this.validar_aristas();
   }
+
+    /**
+   * Devuelve el mapa actual de colores del grafo.
+   */
   obtener_colores() {
     const diccionario_colores: { [key: number]: string | null } = {};
     for (const nodo of this.nodos) {
@@ -169,6 +229,15 @@ export class Grafo {
     return diccionario_colores;
   }
 
+    /**
+   * Calcula métricas globales del grafo.
+   *
+   * Incluye:
+   * - Conflictos.
+   * - Densidad.
+   * - Número de colores.
+   * - Distribución de colores.
+   */
   obtener_estadisticas() {
     const total_nodos = this.nodos.length;
     const total_aristas = this.aristas.length;
@@ -217,6 +286,9 @@ export class Grafo {
     };
   }
 
+    /**
+   * Lista los nodos que presentan conflictos.
+   */
   obtener_nodos_conflictivos() {
     const nodos_conflictivos = [];
     for (const nodo of this.nodos) {

@@ -16,20 +16,58 @@ type Pagina =
   | "monteCarlo"
   | "lasVegas";
 
+  /**
+ * Componente `App`.
+ *
+ * Controlador principal de la aplicación.
+ *
+ * Responsabilidades:
+ * - Gestionar el estado de navegación entre pantallas.
+ * - Mantener el grafo activo durante la ejecución.
+ * - Redirigir al usuario según el flujo de uso.
+ * - Coordinar la creación del grafo (manual o aleatorio).
+ *
+ * Funciona como router básico sin librerías externas.
+ */
 function App() {
   const [paginaActual, setPaginaActual] = useState<Pagina>("menu");
   const [grafoActual, setGrafoActual] = useState<Grafo | null>(null);
 
+    /**
+   * Cambia la pantalla activa del sistema.
+   *
+   * Parámetros:
+   * - pagina: identificador de la vista destino.
+   *
+   * Efecto:
+   * - Actualiza el estado `paginaActual` y dispara el nuevo render.
+   */
   const cambiarPagina = (pagina: Pagina) => {
     setPaginaActual(pagina);
   };
 
+    /**
+   * Genera un grafo aleatorio y lo establece como grafo principal.
+   *
+   * Flujo:
+   * - Llama a `GrafoAleatorio`.
+   * - Guarda el resultado en `grafoActual`.
+   * - Redirige automáticamente a previsualización.
+   */
   const GenerarGrafoA = (numNodos: number, probabilidadArista: number) => {
     const grafo = GrafoAleatorio(numNodos, probabilidadArista);
     setGrafoActual(grafo);
     cambiarPagina("previsualizar");
   };
 
+    /**
+   * Construye un grafo manual y lo establece como grafo principal.
+   *
+   * Flujo:
+   * - Llama a `crearGrafoManual`.
+   * - Guarda el resultado.
+   * - Redirige a previsualización.
+   */
   const GenerarGrafoM = (nodos: number[], aristas: [number, number][]) => {
     const grafo = crearGrafoManual(nodos, aristas);
     setGrafoActual(grafo);

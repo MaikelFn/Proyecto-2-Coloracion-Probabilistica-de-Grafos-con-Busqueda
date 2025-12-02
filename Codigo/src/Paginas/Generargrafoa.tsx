@@ -10,11 +10,38 @@ type GenerarGrafoAleatorioProps = {
   ) => void;
 };
 
+/**
+ * Componente de configuración para la generación de grafos aleatorios.
+ *
+ * Funcionalidad principal:
+ * - Permite al usuario definir la cantidad de nodos y la probabilidad de conexión.
+ * - Ejecuta validaciones básicas antes de generar el grafo.
+ * - Permite regresar al menú principal mediante navegación por estado.
+ *
+ * Props:
+ * - GenerarGrafoA: función que construye el grafo a partir del número de nodos y la probabilidad.
+ * - cambiarPagina: función que permite cambiar la vista actual del sistema.
+ *
+ * Notas de implementación:
+ * - Se utiliza estado local con `useState` para controlar entradas y mensajes de error.
+ * - El componente es de tipo controlador de vista (renderiza y gestiona lógica básica).
+ * - El diseño visual se implementa completamente con estilos inline.
+ */
 function GenerarGrafoAleatorio({
   GenerarGrafoA,
   cambiarPagina,
 }: GenerarGrafoAleatorioProps) {
 
+    /**
+   * Estados internos del componente:
+   *
+   * - CantNodos: controla la cantidad de nodos que tendrá el grafo.
+   * - ProbConex: controla la probabilidad de conexión entre nodos.
+   * - error: almacena mensajes de validación para mostrar al usuario.
+   *
+   * Observación:
+   * - Los valores iniciales reflejan parámetros por defecto razonables.
+   */
   const [CantNodos, setCantNodos] = useState<number>(60);
   const [ProbConex, setProbConex] = useState<number>(0.02);
   const [error, setError] = useState<string>("");
