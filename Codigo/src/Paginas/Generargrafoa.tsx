@@ -47,9 +47,8 @@ function GenerarGrafoAleatorio({
   const [error, setError] = useState<string>("");
 
   const validar = (): boolean => {
-
-    if (isNaN(CantNodos) || CantNodos <= 0) {
-      setError("El número de nodos debe ser mayor que 0.");
+    if (isNaN(CantNodos) || CantNodos < 60 || CantNodos > 120) {
+      setError("El numero de nodos debe estar entre 60 y 120.");
       return false;
     }
 
@@ -61,6 +60,7 @@ function GenerarGrafoAleatorio({
     setError("");
     return true;
   };
+
 
   const generar = () => {
     if (!validar()) return;
