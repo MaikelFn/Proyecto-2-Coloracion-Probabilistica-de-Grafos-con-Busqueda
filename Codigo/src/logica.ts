@@ -1,33 +1,100 @@
 import { Nodo, Grafo } from "./Clases";
 
 /**
- * Genera un grafo no dirigido de forma aleatoria.
+ * Verifica si un grafo es conexo usando búsqueda en profundidad (DFS).
+ *
+ * Parámetros:
+ * - grafo: instancia de `Grafo` a verificar.
+ *
+ * Retorna:
+ * - true si todos los nodos son alcanzables desde el nodo 0.
+ * - false si existe al menos un nodo aislado o componente desconectada.
+ */
+function esGrafoConexo(grafo: Grafo): boolean {
+  if (grafo.nodos.length === 0) return true;
+
+  const visitados = new Set<number>();
+  const pila: Nodo[] = [grafo.nodos[0]];
+
+  while (pila.length > 0) {
+    const nodoActual = pila.pop()!;
+    if (visitados.has(nodoActual.id)) continue;
+
+    visitados.add(nodoActual.id);
+
+    for (const vecino of nodoActual.vecinos) {
+      if (!visitados.has(vecino.id)) {
+        pila.push(vecino);
+      }
+    }
+  }
+
+  return visitados.size === grafo.nodos.length;
+}
+
+/**
+ * Recolorea solo los nodos que tienen conflictos con sus vecinos.
+ *
+ * Parámetros:
+ * - grafo: instancia de `Grafo` sobre la cual se recolorean los nodos conflictivos.
+ *
+ * Comportamiento:
+ * - Identifica nodos con al menos un vecino del mismo color.
+ * - Asigna un color aleatorio solo a esos nodos.
+ * - Valida las aristas después del recoloreo.
+ */
+function recolorearNodosConflictivos(grafo: Grafo): void {
+  // Identificar nodos con conflictos
+  const nodosConflictivos: Nodo[] = [];
+  for (const nodo of grafo.nodos) {
+    if (nodo.contar_conflictos() > 0) {
+      nodosConflictivos.push(nodo);
+    }
+  }
+
+  // Recolorear solo los nodos conflictivos
+  for (const nodo of nodosConflictivos) {
+    const indiceAleatorio = Math.floor(Math.random() * grafo.colores.length);
+    const colorAleatorio = grafo.colores[indiceAleatorio];
+    nodo.colorear(colorAleatorio);
+  }
+
+  // Validar aristas después del recoloreo
+  grafo.validar_aristas();
+}
+
+/**
+ * Genera un grafo no dirigido conexo de forma aleatoria.atoria.
  *
  * Comportamiento:
  * - Crea `numNodos` nodos con IDs consecutivos desde 0.
  * - Intenta conectar cada nodo con una cantidad de vecinos estimada a partir de
- *   `probabilidadArista * numNodos`, garantizando al menos 3 vecinos por nodo.
+ *   `probabilidadArista * numNodos`, garantizando al menos 1 vecino por nodo.
  * - Evita aristas duplicadas y self-loops.
- * - Recorre todos los nodos al final para asegurarse de que ninguno quede sin vecinos,
- *   conectando cualquier nodo aislado con un nodo aleatorio distinto.
+ * - Verifica que el grafo sea conexo. Si no lo es, conecta componentes desconectadas
+ *   hasta lograr un grafo totalmente conexo.
  *
  * Parámetros:
  * - numNodos: cantidad total de nodos a generar.
  * - probabilidadArista: factor que controla la densidad de conexiones del grafo.
  *
  * Retorna:
- * - Una instancia de `Grafo` conectada y sin nodos completamente aislados.
+ * - Una instancia de `Grafo` conexa (todos los nodos alcanzables desde cualquier otro).
  */
 export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
   const grafo = new Grafo();
+
+  // Crear todos los nodos
   for (let i = 0; i < numNodos; i++) {
     const nodo = new Nodo(i);
     grafo.añadir_nodo(nodo);
   }
+
+  // Conectar nodos aleatoriamente
   for (let i = 0; i < numNodos; i++) {
     let CantidadVecinos = Math.floor(probabilidadArista * numNodos);
-    if (CantidadVecinos < 3) {
-      CantidadVecinos = 3;
+    if (CantidadVecinos < 1) {
+      CantidadVecinos = 1;
     }
     for (let k = 0; k < CantidadVecinos; k++) {
       const nodo1 = grafo.nodos[i];
@@ -41,16 +108,61 @@ export function GrafoAleatorio(numNodos: number, probabilidadArista: number) {
     }
   }
 
-  // Validar que no haya nodos desconectados
+  // Asegurar que no haya nodos aislados
   for (let i = 0; i < numNodos; i++) {
     const nodo = grafo.nodos[i];
     if (nodo.vecinos.length === 0) {
-      // Conectar nodo desconectado con un nodo aleatorio
       let indiceAleatorio = Math.floor(Math.random() * numNodos);
       while (indiceAleatorio === i) {
         indiceAleatorio = Math.floor(Math.random() * numNodos);
       }
       grafo.añadir_arista(nodo, grafo.nodos[indiceAleatorio]);
+    }
+  }
+
+  // Asegurar que el grafo sea conexo
+  while (!esGrafoConexo(grafo)) {
+    // Encontrar componentes desconectadas
+    const visitados = new Set<number>();
+    const componentesDesconectadas: number[][] = [];
+
+    for (const nodo of grafo.nodos) {
+      if (!visitados.has(nodo.id)) {
+        const componente: number[] = [];
+        const pila: Nodo[] = [nodo];
+
+        while (pila.length > 0) {
+          const nodoActual = pila.pop()!;
+          if (visitados.has(nodoActual.id)) continue;
+
+          visitados.add(nodoActual.id);
+          componente.push(nodoActual.id);
+
+          for (const vecino of nodoActual.vecinos) {
+            if (!visitados.has(vecino.id)) {
+              pila.push(vecino);
+            }
+          }
+        }
+
+        componentesDesconectadas.push(componente);
+      }
+    }
+
+    // Conectar componentes desconectadas
+    if (componentesDesconectadas.length > 1) {
+      for (let i = 0; i < componentesDesconectadas.length - 1; i++) {
+        const nodoComp1 =
+          componentesDesconectadas[i][
+            Math.floor(Math.random() * componentesDesconectadas[i].length)
+          ];
+        const nodoComp2 =
+          componentesDesconectadas[i + 1][
+            Math.floor(Math.random() * componentesDesconectadas[i + 1].length)
+          ];
+
+        grafo.añadir_arista(grafo.nodos[nodoComp1], grafo.nodos[nodoComp2]);
+      }
     }
   }
 
@@ -181,27 +293,31 @@ export function LasVegasColoracion(grafo: Grafo): [
   number
 ] {
   let intentos = 0;
-  let solucionEncontrada = false;
-
   const historial: Array<{
     intento: number;
     conflictos: number;
     mapa_colores: { [key: number]: string | null };
   }> = [];
-
   const TiempoInicio = performance.now();
 
-  while (!solucionEncontrada) {
+  // Coloreo inicial completo
+  grafo.colorear_grafo();
+
+  while (true) {
     intentos += 1;
 
-    grafo.colorear_grafo();
+    // Solo recolorear nodos conflictivos después del primer intento
+    if (intentos > 1) {
+      recolorearNodosConflictivos(grafo);
+    }
+
     const conflictos = grafo.total_conflictos();
     const mapa_colores = grafo.obtener_colores();
 
     historial.push({ intento: intentos, conflictos, mapa_colores });
 
-    if (conflictos === 0) {
-      solucionEncontrada = true;
+    if (conflictos === 0 || intentos >= 10000) {
+      break;
     }
   }
 
@@ -210,4 +326,3 @@ export function LasVegasColoracion(grafo: Grafo): [
 
   return [historial, TiempoTotal, intentos];
 }
-
