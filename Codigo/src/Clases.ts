@@ -19,14 +19,14 @@ export class Nodo {
     this.numvecinos = 0;
   }
 
-    /**
+  /**
    * Asigna un color al nodo.
    */
   colorear(nuevo_color: string) {
     this.color = nuevo_color;
   }
 
-    /**
+  /**
    * Registra una conexión con otro nodo.
    *
    * Evita duplicados.
@@ -38,7 +38,7 @@ export class Nodo {
     }
   }
 
-    /**
+  /**
    * Elimina una relación de vecindad entre nodos.
    */
   eliminar_vecino(vecino: Nodo) {
@@ -49,7 +49,7 @@ export class Nodo {
     }
   }
 
-    /**
+  /**
    * Cuenta cuántos vecinos tienen el mismo color que el nodo.
    */
   contar_conflictos() {
@@ -102,14 +102,14 @@ export class Grafo {
     this.colores = ["Azul", "Amarillo", "Morado"];
   }
 
-    /**
+  /**
    * Agrega un nodo al grafo.
    */
   añadir_nodo(nodo: Nodo) {
     this.nodos.push(nodo);
   }
 
-    /**
+  /**
    * Conecta dos nodos mediante una arista.
    *
    * Actualiza vecindades.
@@ -121,7 +121,7 @@ export class Grafo {
     nodo2.añadir_vecino(nodo1);
   }
 
-    /**
+  /**
    * Elimina una arista del grafo y limpia referencias internas.
    */
   eliminar_arista(arista: Arista) {
@@ -133,7 +133,7 @@ export class Grafo {
     }
   }
 
-    /**
+  /**
    * Retorna las conexiones del grafo con indicador de conflicto.
    */
   obtener_conexiones() {
@@ -145,7 +145,7 @@ export class Grafo {
     return conexiones;
   }
 
-    /**
+  /**
    * Retorna los nodos con su estado de color.
    */
   obtener_nodos() {
@@ -156,7 +156,7 @@ export class Grafo {
     return ids;
   }
 
-    /**
+  /**
    * Asigna colores aleatorios a todos los nodos.
    */
   colorear_grafo() {
@@ -168,12 +168,17 @@ export class Grafo {
     this.validar_aristas();
   }
 
-    /**
+  /**
    * Marca conflictos en cada arista según los colores.
    */
   validar_aristas() {
     for (const arista of this.aristas) {
-      if (arista.nodo1.color === arista.nodo2.color) {
+      // Solo marca conflicto si ambos nodos tienen color y es el mismo
+      if (
+        arista.nodo1.color !== null &&
+        arista.nodo2.color !== null &&
+        arista.nodo1.color === arista.nodo2.color
+      ) {
         arista.conflicto = true;
       } else {
         arista.conflicto = false;
@@ -181,7 +186,7 @@ export class Grafo {
     }
   }
 
-    /**
+  /**
    * Retorna la cantidad total de aristas en conflicto.
    */
   total_conflictos() {
@@ -192,7 +197,7 @@ export class Grafo {
     return total;
   }
 
-    /**
+  /**
    * Determina si el grafo es una coloración válida.
    */
   validar_coloracion() {
@@ -203,7 +208,7 @@ export class Grafo {
     }
   }
 
-    /**
+  /**
    * Aplica un mapa externo de colores a los nodos existentes.
    */
   recolorear_nodos(diccionario_colores: { [key: number]: string | null }) {
@@ -218,7 +223,7 @@ export class Grafo {
     this.validar_aristas();
   }
 
-    /**
+  /**
    * Devuelve el mapa actual de colores del grafo.
    */
   obtener_colores() {
@@ -229,7 +234,7 @@ export class Grafo {
     return diccionario_colores;
   }
 
-    /**
+  /**
    * Calcula métricas globales del grafo.
    *
    * Incluye:
@@ -286,7 +291,7 @@ export class Grafo {
     };
   }
 
-    /**
+  /**
    * Lista los nodos que presentan conflictos.
    */
   obtener_nodos_conflictivos() {
