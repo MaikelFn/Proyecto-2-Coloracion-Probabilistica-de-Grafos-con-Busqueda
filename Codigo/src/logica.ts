@@ -171,10 +171,7 @@ export function MonteCarloColoracion(
  * - tiempoTotal: tiempo total de ejecución en milisegundos.
  * - intentos: número de intentos realizados hasta detener el algoritmo.
  */
-export function LasVegasColoracion(
-  grafo: Grafo,
-  maxIntentos: number = 100000
-): [
+export function LasVegasColoracion(grafo: Grafo): [
   Array<{
     intento: number;
     conflictos: number;
@@ -194,7 +191,7 @@ export function LasVegasColoracion(
 
   const TiempoInicio = performance.now();
 
-  while (!solucionEncontrada && intentos < maxIntentos) {
+  while (!solucionEncontrada) {
     intentos += 1;
 
     grafo.colorear_grafo();
